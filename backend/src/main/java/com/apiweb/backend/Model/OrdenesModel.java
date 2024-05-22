@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 public class OrdenesModel {
     @Id
-    private Integer idorden;
+    private Integer id;
     private Integer idusuario;
     private Double valortotal;
     private Date fechaorden;

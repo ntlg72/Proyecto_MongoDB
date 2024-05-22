@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 public class EnviosModel {
     @Id
-    private Integer idenvio;
+    private Integer id;
     private Integer idorden;
     private String direccion;
     private double valorenvio;
