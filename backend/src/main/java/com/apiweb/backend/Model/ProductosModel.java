@@ -23,9 +23,9 @@ public class ProductosModel {
     @Id
     private Integer id;
     private String nombre;
-    private Double precio;
+    private double precio;
     private String descripcion;
-    private Boolean paquete;
+    private boolean paquete;
     private Genero genero;
     private String imagenURL;
     private Tipo tipo;

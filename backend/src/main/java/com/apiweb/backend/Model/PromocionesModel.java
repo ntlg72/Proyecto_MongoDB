@@ -23,7 +23,7 @@ public class PromocionesModel{
     private Integer id;
     private Date fechainicio;
     private Date fechafin;
-    private Integer descuento;
+    private double descuento;
     private List<ProductoPromocion> productos = new ArrayList<>();
 
 }

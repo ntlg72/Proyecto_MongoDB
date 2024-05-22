@@ -22,7 +22,7 @@ public class OrdenesModel {
     @Id
     private Integer id;
     private Integer idusuario;
-    private Double valortotal;
+    private double valortotal;
     private Date fechaorden;
     private Pago Pago;
     private List<Contiene> contiene = new ArrayList<>();
