@@ -108,7 +108,7 @@ public class UsuariosController {
     }
 
     //actualizar username o contrasena de cuenta
-    @PatchMapping("actualizarcuenta/{id}/cuenta/{username}")
+    @PatchMapping("actualizarcuenta/{id}/{username}")
     public ResponseEntity<?> actualizarCuentaUsuario(
         @PathVariable("id") int idUsuario,
         @PathVariable("username") String username,
