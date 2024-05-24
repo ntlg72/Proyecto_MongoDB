@@ -127,7 +127,7 @@ public class UsuariosController {
 
 
     //actualizar email
-    @PatchMapping("actualizarcontacto/{id}/email")
+    @PatchMapping("actualizarcontacto/email/{id}")
     public ResponseEntity<?> actualizarInformacionContacto(
         @PathVariable("id") int idUsuario,
         @RequestBody String nuevoEmail) {
