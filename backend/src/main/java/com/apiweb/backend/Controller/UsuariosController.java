@@ -81,7 +81,7 @@ public class UsuariosController {
 
 
     //agregar cuenta a un usuario
-    @PatchMapping("/{id}/cuentas")
+    @PatchMapping("/agregarcuentas/{id}")
     public ResponseEntity<?> agregarCuentaUsuario(
             @PathVariable("id") int idUsuario,
             @RequestBody CuentaUsuario nuevaCuentaUsuario) {

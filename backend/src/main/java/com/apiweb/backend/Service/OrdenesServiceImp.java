@@ -27,12 +27,12 @@ public class OrdenesServiceImp implements IOrdenesService{
 
     @Override
     public String guardarOrden(OrdenesModel orden) {
-        int idUsuario = orden.getIdusuario(); // Obtiene el idUsuario de la orden
+        int id = orden.getIdusuario(); // Obtiene el idUsuario de la orden
 
         // Verifica si el usuario existe
-        Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(idUsuario);
+        Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(id);
         if (!usuarioOptional.isPresent()) {
-            throw new RecursoNoEncontradoException("Error! El usuario con el Id " + idUsuario + " no existe en la base de datos.");
+            throw new RecursoNoEncontradoException("Error! El usuario con el Id " + id + " no existe en la base de datos.");
         }
 
             // Verifica si todos los productos de la orden existen

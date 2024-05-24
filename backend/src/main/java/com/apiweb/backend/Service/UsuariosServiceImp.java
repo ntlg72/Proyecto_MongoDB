@@ -24,7 +24,7 @@ public class UsuariosServiceImp implements IUsuariosService{
     public String guardarUsuario(UsuariosModel usuario) {
         try {
             usuariosRepository.save(usuario);
-            return "El usuario " + usuario.getIdUsuario() + " fue creado con éxito.";
+            return "El usuario " + usuario.getId() + " fue creado con éxito.";
         } catch (DuplicateKeyException e) {
             String mensajeError = "";
             if (e.getMessage().contains("identificacion")) {
@@ -32,7 +32,7 @@ public class UsuariosServiceImp implements IUsuariosService{
             } else if (e.getMessage().contains("email")) {
                 mensajeError = "Error: El correo electrónico " + usuario.getEmail() + " ya está en uso.";
             } else if (e.getMessage().contains("username")) {
-                mensajeError = "Error: El Username ya está en uso.";
+                mensajeError = "Error: El username ya está en uso."; ///personalizar 
             } else {
                 mensajeError = "Error desconocido: " + e.getMessage();
             }
@@ -45,10 +45,10 @@ public class UsuariosServiceImp implements IUsuariosService{
 
         
     @Override
-    public UsuariosModel buscarUsuarioPorId(int idUsuario) {
-        Optional <UsuariosModel> estudianteRecuperado = usuariosRepository.findById(idUsuario);
+    public UsuariosModel buscarUsuarioPorId(int id) {
+        Optional <UsuariosModel> estudianteRecuperado = usuariosRepository.findById(id);
         return  estudianteRecuperado.orElseThrow(()-> new RecursoNoEncontradoException(
-            "Error!. El usuario con el Id" +idUsuario+ ", no fue encontrado en la BD."));
+            "Error!. El usuario con el Id" +id+ ", no fue encontrado en la BD."));
     }
 
 
