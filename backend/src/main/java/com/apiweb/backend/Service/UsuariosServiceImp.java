@@ -32,7 +32,7 @@ public class UsuariosServiceImp implements IUsuariosService{
             } else if (e.getMessage().contains("email")) {
                 mensajeError = "Error: El correo electrónico " + usuario.getEmail() + " ya está en uso.";
             } else if (e.getMessage().contains("username")) {
-                mensajeError = "Error: El nombre de usuario ya está en uso.";
+                mensajeError = "Error: El Username ya está en uso.";
             } else {
                 mensajeError = "Error desconocido: " + e.getMessage();
             }

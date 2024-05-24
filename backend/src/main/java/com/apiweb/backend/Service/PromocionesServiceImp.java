@@ -62,7 +62,6 @@ public class PromocionesServiceImp implements IPromocionesService{
     }
 
     // Listar todas las promociones
-
     @Override
     public List<PromocionesModel> listarPromociones(){
         return promocionesRepository.findAll();
