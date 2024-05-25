@@ -31,6 +31,6 @@ public class ProductosModel {
     private Tipo tipo;
     private String categoria;
     private List<Talla> talla = new ArrayList<>();
-    private List<Comentario> comentarios = new ArrayList<>(); 
+    private List<Comentario> comentarios = new ArrayList<>();
     private List<ProductosPaquete> productospaquete = new ArrayList<>();
 }
