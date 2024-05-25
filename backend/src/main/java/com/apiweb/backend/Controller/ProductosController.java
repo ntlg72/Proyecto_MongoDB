@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apiweb.backend.Exception.RecursoNoEncontradoException;
+import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Service.IProductosService;
 
@@ -32,7 +34,7 @@ public class ProductosController {
     // Obtener un producto por ID
     @GetMapping("/buscarporid/{id}")
     public ResponseEntity<?> buscarProductoPorId(@PathVariable int id) {
-        try {   
+        try {
             ProductosModel producto = productoService.buscarProductoPorId(id);
             return ResponseEntity.ok(producto);
             
@@ -63,5 +65,17 @@ public class ProductosController {
         return ResponseEntity.ok("Producto paquete creado con ID: " + id);
     }
 
+    @PostMapping("/{idProducto}/{idusuario}/comentarios/guardar")
+    public ResponseEntity<String> guardarComentario(
+            @PathVariable("idProducto") int idproducto,
+            @PathVariable("idusuario") int idusuario,
+            @RequestBody Comentario comentario) {
+        try {
+            String resultado = productoService.guardarComentario(idproducto, idusuario, comentario);
+            return ResponseEntity.ok(resultado);
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
     
 }

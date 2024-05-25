@@ -71,26 +71,46 @@ public class OrdenesServiceImp implements IOrdenesService{
     public List<OrdenesModel> listarOrdenes() {
         return ordenRepository.findAll();
     }
+    
+    //Actualizar Orden
+
+    @Override
+    public String actualizarOrden(int id, OrdenesModel ordenDetalles) {
+    Optional<OrdenesModel> ordenExistenteOpt = ordenRepository.findById(id);
+    if (!ordenExistenteOpt.isPresent()) {
+        throw new RecursoNoEncontradoException("Error! La orden con el ID " + id + " no fue encontrada.");
+    }
+
+    OrdenesModel ordenExistente = ordenExistenteOpt.get();
+
+    // Verificar si la orden esta pagada
+    boolean estaPagado = ordenExistente.getPago().isPagado();
+
+    if (estaPagado) {
+        throw new RecursoNoEncontradoException("Error! No se puede actualizar la orden con el ID " + id + " debido a que ya está pagada.");
+    }
+
+    // Actualizar los detalles de la orden
+    ordenExistente.setFechaorden(ordenDetalles.getFechaorden());
+    ordenExistente.setContiene(ordenDetalles.getContiene());
+
+    // Guardar los cambios en el repositorio
+    ordenRepository.save(ordenExistente);
+
+    return "Orden actualizada con exito";
+    }
+
+
+
 
     @Override
     public void eliminarOrdenPorId(int idOrden) {
-        if (!ordenRepository.existsById(idOrden)) {
-            throw new RecursoNoEncontradoException("Error! La orden con el ID " + idOrden + " no fue encontrada en la base de datos.");
-        }
-        ordenRepository.deleteById(idOrden);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'eliminarOrdenPorId'");
     }
 
-    @Override
-    public String actualizarOrden(int idOrden, OrdenesModel ordenDetalles) {
-        OrdenesModel ordenExistente = ordenRepository.findById(idOrden)
-            .orElseThrow(() -> new RecursoNoEncontradoException("Error! La orden con el ID " + idOrden + " no fue encontrada."));
-        
-        // Actualizar los detalles de la orden existente
-        ordenExistente.setFechaorden(ordenDetalles.getFechaorden());
-        ordenExistente.setContiene(ordenDetalles.getContiene());
-        
-        ordenRepository.save(ordenExistente);
-        return "La orden con el ID " + idOrden + " fue actualizada con éxito.";
-    }
-    
 }
+
+
+
+

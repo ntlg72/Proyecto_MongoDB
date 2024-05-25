@@ -32,7 +32,7 @@ public class UsuariosServiceImp implements IUsuariosService{
             } else if (e.getMessage().contains("email")) {
                 mensajeError = "Error: El correo electrónico " + usuario.getEmail() + " ya está en uso.";
             } else if (e.getMessage().contains("username")) {
-                mensajeError = "Error: El nombre de usuario ya está en uso.";
+                mensajeError = "Error: El username ya está en uso.";
             } else {
                 mensajeError = "Error desconocido: " + e.getMessage();
             }
@@ -107,7 +107,7 @@ public class UsuariosServiceImp implements IUsuariosService{
         usuariosRepository.save(usuario);
     } catch (DataIntegrityViolationException e) {
         // Manejar la excepción en caso de violación de integridad
-        throw new RecursoNoEncontradoException("Error: El nombre de usuario ya está en uso.");
+        throw new RecursoNoEncontradoException("Error: El username ya está en uso.");
     }
     }
     
@@ -136,7 +136,7 @@ public class UsuariosServiceImp implements IUsuariosService{
 
             usuariosRepository.save(usuario);
         } else {
-            throw new RecursoNoEncontradoException("Error! La cuenta con el nombre de usuario '" + username + "' no existe para el usuario con ID " + idUsuario);
+            throw new RecursoNoEncontradoException("Error! La cuenta con el username '" + username + "' no existe para el usuario con ID " + idUsuario);
         }
     }
 
@@ -166,7 +166,7 @@ public class UsuariosServiceImp implements IUsuariosService{
                 cuentaExistente.setContrasena(nuevaCuentaUsuario.getContrasena());
             }
         } else {
-            throw new RecursoNoEncontradoException("Error! La cuenta con el nombre de usuario '" + username + "' no existe para el usuario con ID " + idUsuario);
+            throw new RecursoNoEncontradoException("Error! La cuenta con el username " + username + " no existe para el usuario con ID " + idUsuario);
         }
     
         // Guardar el usuario actualizado en la base de datos
@@ -174,7 +174,7 @@ public class UsuariosServiceImp implements IUsuariosService{
             usuariosRepository.save(usuario);
         } catch (DataIntegrityViolationException e) {
             // Se viola el índice único del nombre de usuario
-            throw new RecursoNoEncontradoException("El nombre de usuario ya está en uso.");
+            throw new RecursoNoEncontradoException("El username" + username + "ya está en uso.");
         }
 
     

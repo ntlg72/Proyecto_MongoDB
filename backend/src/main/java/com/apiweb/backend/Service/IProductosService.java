@@ -2,6 +2,7 @@ package com.apiweb.backend.Service;
 
 import java.util.List;
 
+import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
 
 public interface IProductosService {
@@ -16,4 +17,6 @@ public interface IProductosService {
     // actualizar producto por id
     // Guardar Producto paquete
     String guardarProductoPaquete (ProductosModel producto); 
+    //Guardar comentario
+    String guardarComentario (int idProducto, int idUsuario, Comentario comentario );
 }

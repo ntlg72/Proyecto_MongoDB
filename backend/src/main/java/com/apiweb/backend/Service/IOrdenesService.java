@@ -5,6 +5,7 @@ import java.util.List;
 import com.apiweb.backend.Model.OrdenesModel;
 
 public interface IOrdenesService {
+    
     String guardarOrden(OrdenesModel orden);
     
     OrdenesModel buscarOrdenPorId(int idOrden);
@@ -13,5 +14,5 @@ public interface IOrdenesService {
 
     void eliminarOrdenPorId(int idOrden);
 
-    String actualizarOrden(int idOrden, OrdenesModel ordenDetalles);
+    String actualizarOrden(int id, OrdenesModel ordenDetalles);
 }

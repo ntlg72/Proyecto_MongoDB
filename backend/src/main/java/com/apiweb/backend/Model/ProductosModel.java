@@ -30,7 +30,7 @@ public class ProductosModel {
     private String imagenURL;
     private Tipo tipo;
     private String categoria;
-    private Talla talla;
+    private List<Talla> talla = new ArrayList<>();
     private List<Comentario> comentarios = new ArrayList<>(); 
     private List<ProductosPaquete> productospaquete = new ArrayList<>();
 }

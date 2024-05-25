@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.apiweb.backend.Service.IOrdenesService;
+import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.OrdenesModel;
 
 
@@ -17,13 +18,13 @@ public class OrdenesController {
 
     @Autowired IOrdenesService ordenesService;
 
-    // Guardar Orden 
+    // Guardar Orden
     @PostMapping("/guardar")
     public ResponseEntity<String> crearOrden(@RequestBody OrdenesModel orden) {
         return new ResponseEntity<String>(ordenesService.guardarOrden(orden),HttpStatus.OK);
     }
 
-    //Buscar orden por id 
+    //Buscar orden por id
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarOrdenPorId(@PathVariable Integer id) {
         try {
@@ -40,16 +41,22 @@ public class OrdenesController {
         List<OrdenesModel> ordenes = ordenesService.listarOrdenes();
         return new ResponseEntity<List<OrdenesModel>>(ordenes, HttpStatus.OK);
     }
-   
-   //Actualizar Orden
+
+    //Actualizar Ordenes por id
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarOrden(@PathVariable Integer id, @RequestBody OrdenesModel ordenDetalles) {
-        String ordenActualizada = ordenesService.actualizarOrden(id, ordenDetalles);
-        return ordenActualizada != null ? new ResponseEntity<>(ordenActualizada, HttpStatus.OK)
-                                        : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> actualizarOrden(@PathVariable int id, @RequestBody OrdenesModel ordenDetalles) {
+        try {
+            String resultado = ordenesService.actualizarOrden(id, ordenDetalles);
+            return ResponseEntity.ok(resultado);
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la orden");
+        }
     }
 
-    // Eliminar Ordenes por id 
+
+    // Eliminar Ordenes por id
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarOrdenPorId(@PathVariable Integer id) {
     try {

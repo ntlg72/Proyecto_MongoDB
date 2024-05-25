@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Talla {
-    private String nombretalla;
+    private String nombre;
     private Integer cantidad;
 }

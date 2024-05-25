@@ -14,4 +14,6 @@ import lombok.NoArgsConstructor;
 public class Contiene {
     private Integer idproducto;
     private Integer cantidad;
+    private String talla;
+    private boolean pagado;
 }
