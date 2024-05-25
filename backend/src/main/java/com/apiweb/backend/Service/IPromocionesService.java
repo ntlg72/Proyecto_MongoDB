@@ -12,5 +12,5 @@ public interface IPromocionesService {
     // listar Productos
     List<PromocionesModel> listarPromociones();
     // eliminar Producto por id
-    void eliminarPromocionesPorId(int IdPromociones);
+    void eliminarPromocionesPorId(int IdPromociones, int idUsuario, String username);
 }

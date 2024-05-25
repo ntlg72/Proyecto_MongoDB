@@ -84,11 +84,46 @@ public class PromocionesServiceImp implements IPromocionesService{
         return promocionesRepository.findAll();
     }
 
-    @Override
-    public void eliminarPromocionesPorId(int IdPromociones){
-        if(!promocionesRepository.existsById(IdPromociones)){
-            throw new RecursoNoEncontradoException("Error!. La promocion con el Id "+IdPromociones+" no fue encontrando.");
-        }
+
+     // Eliminar una promocion
+    @Transactional//si ocurre cualquier error durante el procesamiento, todos los cambios realizados se revertirán
+    public void eliminarPromocionesPorId(int IdPromociones, int idUsuario, String username){
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+        .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
+
+    // Verificar si el usuario ya tiene una cuenta de administrador
+    boolean esAdministrador = usuario.getCuentas().stream()
+            .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
+
+    if (!esAdministrador) {
+        throw new RecursoNoEncontradoException("Error! Solo los administradores pueden eliminar promociones.");
+    }
+
+    // Verificar si la promoción existe
+    if (!promocionesRepository.existsById(IdPromociones)) {
+        throw new RecursoNoEncontradoException("Error! La promoción con el Id " + IdPromociones + " no fue encontrada.");
+    }
+
+    PromocionesModel promocion = promocionesRepository.findById(IdPromociones)
+            .orElseThrow(() -> new RecursoNoEncontradoException("Error! La promoción con el Id " + IdPromociones + " no fue encontrada."));
+
+    // Iterar sobre los productos asociados a la promoción
+    for (ProductoPromocion productoPromocion : promocion.getProductos()) {
+        Integer idProducto = productoPromocion.getIdproducto();
+        ProductosModel producto = productosRepository.findById(idProducto)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error! El producto con id: " + idProducto + " no existe."));
+
+        // Calcular el precio original del producto
+        double descuento = promocion.getDescuento();
+        double precioConDescuento = producto.getPrecio();
+        double precioOriginal = precioConDescuento / (1 - descuento);
+
+        // Actualizar el precio del producto
+        producto.setPrecio(precioOriginal);
+        productosRepository.save(producto);
+    }
+
+    // Eliminar la promoción
     promocionesRepository.deleteById(IdPromociones);
     }
 

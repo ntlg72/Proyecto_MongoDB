@@ -14,6 +14,26 @@ import com.apiweb.backend.Repository.IOrdenesRepository;
 
 @Service
 
+
+/* Municipios a las que se permiten envíos
+Medellín
+Barranquilla
+Bogotá
+Cartagena
+Tunja
+Manizales
+Florencia
+Popayán
+Valledupar
+Montería
+Zipaquirá
+Quibdó
+Neiva
+Riohacha
+Santa Marta
+*/
+
+
 public class EnviosServiceImp implements IEnviosService {
     @Autowired IEnviosRepository enviosRepository;
     @Autowired IOrdenesRepository  ordenesRepository;
