@@ -24,7 +24,7 @@ public class UsuariosServiceImp implements IUsuariosService{
     public String guardarUsuario(UsuariosModel usuario) {
         try {
             usuariosRepository.save(usuario);
-            return "El usuario " + usuario.getIdUsuario() + " fue creado con éxito.";
+            return "El usuario " + usuario.getId() + " fue creado con éxito.";
         } catch (DuplicateKeyException e) {
             String mensajeError = "";
             if (e.getMessage().contains("identificacion")) {
@@ -45,10 +45,10 @@ public class UsuariosServiceImp implements IUsuariosService{
 
         
     @Override
-    public UsuariosModel buscarUsuarioPorId(int idUsuario) {
-        Optional <UsuariosModel> estudianteRecuperado = usuariosRepository.findById(idUsuario);
+    public UsuariosModel buscarUsuarioPorId(int id) {
+        Optional <UsuariosModel> estudianteRecuperado = usuariosRepository.findById(id);
         return  estudianteRecuperado.orElseThrow(()-> new RecursoNoEncontradoException(
-            "Error!. El usuario con el Id" +idUsuario+ ", no fue encontrado en la BD."));
+            "Error!. El usuario con el Id" +id+ ", no fue encontrado en la BD."));
     }
 
 
@@ -99,7 +99,7 @@ public class UsuariosServiceImp implements IUsuariosService{
         throw new RecursoNoEncontradoException("Error: El usuario ya tiene una cuenta de cliente y una de administrador.");
     }
 
-    // Si no se viola la regla de negocio, agregar la nueva cuenta de usuario
+    // Si no se viola el index unique de username, agregar la nueva cuenta de usuario
     usuario.getCuentas().add(nuevaCuentaUsuario);
 
     try {
@@ -122,7 +122,6 @@ public class UsuariosServiceImp implements IUsuariosService{
 
         List<CuentaUsuario> cuentas = usuario.getCuentas();
 
-        // verificar que el usuario tenga exactamente dos cuentas
         
         // buscar la cuenta con el nombre de usuario proporcionado
         Optional<CuentaUsuario> cuentaOptional = cuentas.stream()

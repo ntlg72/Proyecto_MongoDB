@@ -42,7 +42,7 @@ public class PromocionesController {
 
 
     @GetMapping ("/buscarporid/{id}")
-    public ResponseEntity<?> buscarPromocionPorId(@PathVariable int IdPromociones) {
+    public ResponseEntity<?> buscarPromocionPorId(@PathVariable ("id") int IdPromociones) {
     try {
         PromocionesModel promociones = promocionesService.buscarPromocionPorId(IdPromociones);
         return ResponseEntity.ok(promociones);
@@ -59,16 +59,23 @@ public class PromocionesController {
         return ResponseEntity.ok(promociones);
     }
     
-    @DeleteMapping("/eliminarporid/{id}")
+    @DeleteMapping("/eliminarporid/{idpro}/{iduser}/{username}")
     
-    public ResponseEntity<?> eliminarPromocionesPorId(@PathVariable ("id") Integer IdPromociones){
-        try{
-            promocionesService.eliminarPromocionesPorId(IdPromociones);
-            return ResponseEntity.ok("Promocion eliminada correctamente");
+    public ResponseEntity<String> eliminarPromocionPorId(
+            @PathVariable("idpro") int idPromocion,
+            @PathVariable("iduser") int idUsuario,
+            @PathVariable("username") String username) {
+
+        try {
+            promocionesService.eliminarPromocionesPorId(idPromocion, idUsuario, username);
+            return ResponseEntity.ok("Promoción con id " + idPromocion + " eliminada correctamente");
         } catch (RecursoNoEncontradoException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la Promocion");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la promoción: " + e.getMessage());
         }
+    }
 
     }
     
-}
+

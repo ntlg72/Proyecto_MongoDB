@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 public class UsuariosModel {
     @Id
-    private long idUsuario;
+    private int id;
     private String identificacion;
     private String nombre;
     private String email;

@@ -81,7 +81,7 @@ public class UsuariosController {
 
 
     //agregar cuenta a un usuario
-    @PatchMapping("/{id}/cuentas")
+    @PatchMapping("/agregarcuentas/{id}")
     public ResponseEntity<?> agregarCuentaUsuario(
             @PathVariable("id") int idUsuario,
             @RequestBody CuentaUsuario nuevaCuentaUsuario) {
@@ -108,7 +108,7 @@ public class UsuariosController {
     }
 
     //actualizar username o contrasena de cuenta
-    @PatchMapping("/{id}/cuenta/{username}")
+    @PatchMapping("actualizarcuenta/{id}/{username}")
     public ResponseEntity<?> actualizarCuentaUsuario(
         @PathVariable("id") int idUsuario,
         @PathVariable("username") String username,
@@ -127,7 +127,7 @@ public class UsuariosController {
 
 
     //actualizar email
-    @PatchMapping("/{id}/email")
+    @PatchMapping("actualizarcontacto/email/{id}")
     public ResponseEntity<?> actualizarInformacionContacto(
         @PathVariable("id") int idUsuario,
         @RequestBody String nuevoEmail) {

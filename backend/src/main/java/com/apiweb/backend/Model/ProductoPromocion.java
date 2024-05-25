@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class ProductoPromocion{
-    private Integer idProducto;
+    private Integer idproducto;
 }

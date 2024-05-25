@@ -5,12 +5,13 @@ import java.util.List;
 import com.apiweb.backend.Model.PromocionesModel;
 
 public interface IPromocionesService {
-    // Guardar Producto
+    // Guardar promocion 
     String guardarPromocion(PromocionesModel promocion,int idUsuario, String username);
-    // Buscar Producto por Id
+    // Buscar promoion por Id
     PromocionesModel buscarPromocionPorId(int IdPromociones);
-    // listar Productos
+    // listar promocion
     List<PromocionesModel> listarPromociones();
-    // eliminar Producto por id
-    void eliminarPromocionesPorId(int IdPromociones);
+    // Eliminar promocion
+    void eliminarPromocionesPorId(int IdPromociones, int idUsuario, String username);
+    //Actualizar promocion
 }
