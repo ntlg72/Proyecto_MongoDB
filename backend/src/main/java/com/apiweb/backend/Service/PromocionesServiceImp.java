@@ -26,21 +26,18 @@ public class PromocionesServiceImp implements IPromocionesService{
     
     // Guardar un nueva promocion
     @Transactional//si ocurre cualquier error durante el procesamiento, todos los cambios realizados se revertirán
-    
     public String guardarPromocion(PromocionesModel promocion, int idUsuario, String username){
 
 
-    UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+            UsuariosModel usuario = usuariosRepository.findById(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
 
-        // Verificar si el usuario ya tiene una cuenta de administrador, es decir,
-        //que tenga el permiso para crear promociones
-        boolean esAdministrador = usuario.getCuentas().stream()
-                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
-
-        if (!esAdministrador) {
-            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
-        }
+            boolean esAdmin = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getUsername().equals(username) && cuenta.getTipousuario() == TipoUsuario.administrador);
+            
+            if (!esAdmin) {
+                throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+            }
 
         for (ProductoPromocion productoPromocion : promocion.getProductos()) {
             Integer idProducto = productoPromocion.getIdproducto();
@@ -69,6 +66,9 @@ public class PromocionesServiceImp implements IPromocionesService{
         return "La promoción con el Id: " + promocion.getId() + " fue creada con éxito.";
     }
 
+
+
+
     // bucar una promocion por su id
     @Override
     public PromocionesModel buscarPromocionPorId(int IdPromociones){
@@ -78,6 +78,9 @@ public class PromocionesServiceImp implements IPromocionesService{
         ));
     }
 
+
+
+
     // Listar todas las promociones
     @Override
     public List<PromocionesModel> listarPromociones(){
@@ -85,19 +88,22 @@ public class PromocionesServiceImp implements IPromocionesService{
     }
 
 
+
+
+    
      // Eliminar una promocion
     @Transactional//si ocurre cualquier error durante el procesamiento, todos los cambios realizados se revertirán
     public void eliminarPromocionesPorId(int IdPromociones, int idUsuario, String username){
+        
         UsuariosModel usuario = usuariosRepository.findById(idUsuario)
         .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
 
-    // Verificar si el usuario ya tiene una cuenta de administrador
-    boolean esAdministrador = usuario.getCuentas().stream()
-            .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
-
-    if (!esAdministrador) {
-        throw new RecursoNoEncontradoException("Error! Solo los administradores pueden eliminar promociones.");
-    }
+        boolean esAdmin = usuario.getCuentas().stream()
+        .anyMatch(cuenta -> cuenta.getUsername().equals(username) && cuenta.getTipousuario() == TipoUsuario.administrador);
+    
+        if (!esAdmin) {
+        throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+        }
 
     // Verificar si la promoción existe
     if (!promocionesRepository.existsById(IdPromociones)) {
@@ -126,5 +132,8 @@ public class PromocionesServiceImp implements IPromocionesService{
     // Eliminar la promoción
     promocionesRepository.deleteById(IdPromociones);
     }
+
+
+    //Actualizar promocion
 
 }
