@@ -10,6 +10,7 @@ import com.apiweb.backend.Model.Contiene;
 import com.apiweb.backend.Model.OrdenesModel;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.Talla;
 import com.apiweb.backend.Repository.IOrdenesRepository;
 import com.apiweb.backend.Repository.IProductosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -25,40 +26,66 @@ public class OrdenesServiceImp implements IOrdenesService{
     @Override
     public String guardarOrden(OrdenesModel orden) {
         int idUsuario = orden.getIdusuario(); // Obtiene el idUsuario de la orden
-
+    
         // Verifica si el usuario existe
         Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(idUsuario);
         if (!usuarioOptional.isPresent()) {
             throw new RecursoNoEncontradoException("Error! El usuario con el Id " + idUsuario + " no existe en la base de datos.");
         }
-
-            // Verifica si todos los productos de la orden existen
-            StringBuilder respuesta = new StringBuilder();
-            boolean todosProductosExisten = true;
-
-            for (Contiene contiene : orden.getContiene()) {
+    
+        // Verifica si todos los productos de la orden existen y si la talla y cantidad están disponibles
+        StringBuilder respuesta = new StringBuilder();
+        boolean todosProductosExisten = true;
+    
+        for (Contiene contiene : orden.getContiene()) {
             Integer idProducto = contiene.getIdproducto();
             Optional<ProductosModel> productoOptional = productoRepository.findById(idProducto);
-
+    
             if (!productoOptional.isPresent()) {
                 respuesta.append("Error! El producto con el id ").append(idProducto).append(" no existe en la base de datos.\n");
                 todosProductosExisten = false;
+            } else {
+                ProductosModel producto = productoOptional.get();
+                String tallaSolicitada = contiene.getTalla();
+                int cantidadSolicitada = contiene.getCantidad();
+                boolean tallaEncontrada = false;
+    
+                // Verifica si la talla solicitada está disponible en el array de tallas
+                for (Talla tallaProducto : producto.getTalla()) {
+                    if (tallaProducto.getNombre().equals(tallaSolicitada)) {
+                        tallaEncontrada = true;
+                        if (tallaProducto.getCantidad() >= cantidadSolicitada) {
+                            // Actualiza la cantidad de la talla en el producto si la orden está pagada
+                            if (orden.getPago().isPagado()) {
+                                tallaProducto.setCantidad(tallaProducto.getCantidad() - cantidadSolicitada);
+                                productoRepository.save(producto);
+                            }
+                        } else {
+                            respuesta.append("Error! El producto con el id ").append(idProducto)
+                                    .append(" no tiene suficiente cantidad para la talla ").append(tallaSolicitada).append(".\n");
+                            todosProductosExisten = false;
+                        }
+                    }
+                }
+    
+                if (!tallaEncontrada) {
+                    respuesta.append("Error! El producto con el id ").append(idProducto)
+                            .append(" no tiene la talla ").append(tallaSolicitada).append(".\n");
+                    todosProductosExisten = false;
+                }
             }
         }
-
-        // Si todos los productos existen, guarda la orden
-            if (todosProductosExisten) {
+    
+        // Si todos los productos existen y las tallas están disponibles, guarda la orden
+        if (todosProductosExisten) {
             ordenRepository.save(orden);
-            respuesta.append("La orden con el iD:"+ orden.getId()+" fue creada con éxito.");
+            respuesta.append("La orden con el ID: ").append(orden.getId()).append(" fue creada con éxito.");
         } else {
-            respuesta.append("No se puede crear la orden porque uno o más productos no existen.");
+            respuesta.append("No se puede crear la orden porque uno o más productos no existen o no tienen suficiente cantidad en la talla solicitada.");
         }
-
+    
         return respuesta.toString().trim();
-
-        //Guardar en caso de que no exista disponibilidad de tallas
     }
-
     @Override
     public OrdenesModel buscarOrdenPorId(int idOrden) {
         Optional <OrdenesModel> ordenRecuperada = ordenRepository.findById(idOrden);
@@ -100,15 +127,13 @@ public class OrdenesServiceImp implements IOrdenesService{
     return "Orden actualizada con exito";
     }
 
-
-
-
     @Override
     public void eliminarOrdenPorId(int idOrden) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eliminarOrdenPorId'");
+        if (!ordenRepository.existsById(idOrden)) {
+            throw new RecursoNoEncontradoException("Error! La orden con el ID " + idOrden + " no fue encontrada en la base de datos.");
+        }
+        ordenRepository.deleteById(idOrden);
     }
-
 }
 
 
