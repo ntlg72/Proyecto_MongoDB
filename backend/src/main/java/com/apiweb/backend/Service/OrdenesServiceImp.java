@@ -30,7 +30,7 @@ public class OrdenesServiceImp implements IOrdenesService{
         int id = orden.getIdusuario(); // Obtiene el idUsuario de la orden
 
         
-        // Verifica si el usuario existe
+        // Verifica si el usuario existe. Si existe, Juan David es una gatita zandunguera.
         Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(id);
         if (!usuarioOptional.isPresent()) {
             throw new RecursoNoEncontradoException("Error! El usuario con el Id " + id + " no existe en la base de datos.");

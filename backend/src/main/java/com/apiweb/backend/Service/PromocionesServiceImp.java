@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.ProductoPromocion;
@@ -24,14 +25,16 @@ public class PromocionesServiceImp implements IPromocionesService{
     @Autowired IUsuariosRepository usuariosRepository;
     
     // Guardar un nueva promocion
-    @Override
+    @Transactional//si ocurre cualquier error durante el procesamiento, todos los cambios realizados se revertirán
+    
     public String guardarPromocion(PromocionesModel promocion, int idUsuario, String username){
 
 
     UsuariosModel usuario = usuariosRepository.findById(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
 
-        // Verificar si el usuario ya tiene una cuenta de administrador
+        // Verificar si el usuario ya tiene una cuenta de administrador, es decir,
+        //que tenga el permiso para crear promociones
         boolean esAdministrador = usuario.getCuentas().stream()
                 .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
 
@@ -39,15 +42,30 @@ public class PromocionesServiceImp implements IPromocionesService{
             throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
         }
 
-        for (ProductoPromocion productos : promocion.getProductos()) {
-            Integer id = productos.getIdproducto();
-            ProductosModel producto = productosRepository.findById(id).orElse(null);
-            if (producto == null) {
-                throw new RecursoNoEncontradoException("Error! El producto con id: " + id + " no existe.");
+        for (ProductoPromocion productoPromocion : promocion.getProductos()) {
+            Integer idProducto = productoPromocion.getIdproducto();
+            Optional<ProductosModel> productoOptional = productosRepository.findById(idProducto);
+
+            // Verificar si el producto existe
+            if (!productoOptional.isPresent()) {
+                throw new RecursoNoEncontradoException("Error! El producto con id: " + idProducto + " no existe.");
             }
-            productos.setIdproducto(id);
+
+            ProductosModel producto = productoOptional.get();
+
+            // Calcular el nuevo precio basado en el descuento
+            double descuento = promocion.getDescuento();
+            double nuevoPrecio = producto.getPrecio() * (1 - descuento);
+
+            // Actualizar el precio del producto
+            producto.setPrecio(nuevoPrecio);
+            productosRepository.save(producto);
+
+            // Asegurarse de que el id del producto está correctamente establecido en la promoción
+            productoPromocion.setIdproducto(idProducto);
         }
         promocionesRepository.save(promocion);
+
         return "La promoción con el Id: " + promocion.getId() + " fue creada con éxito.";
     }
 

@@ -32,7 +32,7 @@ public class UsuariosServiceImp implements IUsuariosService{
             } else if (e.getMessage().contains("email")) {
                 mensajeError = "Error: El correo electrónico " + usuario.getEmail() + " ya está en uso.";
             } else if (e.getMessage().contains("username")) {
-                mensajeError = "Error: El username ya está en uso."; ///personalizar 
+                mensajeError = "Error: El username ya está en uso."; ///personalizar
             } else {
                 mensajeError = "Error desconocido: " + e.getMessage();
             }
@@ -99,14 +99,14 @@ public class UsuariosServiceImp implements IUsuariosService{
         throw new RecursoNoEncontradoException("Error: El usuario ya tiene una cuenta de cliente y una de administrador.");
     }
 
-    // Si no se viola la regla de negocio, agregar la nueva cuenta de usuario
+    // Si no se viola el index unique de username, agregar la nueva cuenta de usuario
     usuario.getCuentas().add(nuevaCuentaUsuario);
 
     try {
         // Guardar el usuario en la base de datos
         usuariosRepository.save(usuario);
     } catch (DataIntegrityViolationException e) {
-        // Manejar la excepción en caso de violación de integridad
+        // Manejar la excepción en caso de duplicación de username
         throw new RecursoNoEncontradoException("Error: El nombre de usuario ya está en uso.");
     }
     }
@@ -122,7 +122,6 @@ public class UsuariosServiceImp implements IUsuariosService{
 
         List<CuentaUsuario> cuentas = usuario.getCuentas();
 
-        // verificar que el usuario tenga exactamente dos cuentas
         
         // buscar la cuenta con el nombre de usuario proporcionado
         Optional<CuentaUsuario> cuentaOptional = cuentas.stream()
