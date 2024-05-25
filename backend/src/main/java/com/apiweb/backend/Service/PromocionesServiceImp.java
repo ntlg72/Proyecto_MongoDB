@@ -40,12 +40,12 @@ public class PromocionesServiceImp implements IPromocionesService{
         }
 
         for (ProductoPromocion productos : promocion.getProductos()) {
-            Integer id = productos.getIdProducto();
+            Integer id = productos.getIdproducto();
             ProductosModel producto = productosRepository.findById(id).orElse(null);
             if (producto == null) {
                 throw new RecursoNoEncontradoException("Error! El producto con id: " + id + " no existe.");
             }
-            productos.setIdProducto(id);
+            productos.setIdproducto(id);
         }
         promocionesRepository.save(promocion);
         return "La promoción con el Id: " + promocion.getId() + " fue creada con éxito.";
