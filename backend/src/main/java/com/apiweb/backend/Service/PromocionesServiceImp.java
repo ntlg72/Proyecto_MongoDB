@@ -74,7 +74,7 @@ public class PromocionesServiceImp implements IPromocionesService{
     public PromocionesModel buscarPromocionPorId(int IdPromociones){
         Optional<PromocionesModel> promocionRecuperado = promocionesRepository.findById(IdPromociones);
         return promocionRecuperado.orElseThrow(() -> new RecursoNoEncontradoException(
-            "Error! La promocion con el Id"+ IdPromociones+" no fue encontrada"));  
+        "Error! La promocion con el Id"+ IdPromociones+" no fue encontrada"));
     }
 
 
