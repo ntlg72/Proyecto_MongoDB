@@ -29,6 +29,7 @@ public class OrdenesServiceImp implements IOrdenesService{
     public String guardarOrden(OrdenesModel orden) {
         int id = orden.getIdusuario(); // Obtiene el idUsuario de la orden
 
+        
         // Verifica si el usuario existe
         Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(id);
         if (!usuarioOptional.isPresent()) {
@@ -61,10 +62,10 @@ public class OrdenesServiceImp implements IOrdenesService{
     }
 
     @Override
-    public OrdenesModel buscarOrdenPorId(int idOrden) {
-        Optional <OrdenesModel> ordenRecuperada = ordenRepository.findById(idOrden);
+    public OrdenesModel buscarOrdenPorId(int id) {
+        Optional <OrdenesModel> ordenRecuperada = ordenRepository.findById(id);
         return ordenRecuperada.orElseThrow(() -> new RecursoNoEncontradoException(
-            "Error! La orden con el ID " + idOrden + " no fue encontrada."
+            "Error! La orden con el ID " + id + " no fue encontrada."
         ));
     }
 
@@ -74,24 +75,24 @@ public class OrdenesServiceImp implements IOrdenesService{
     }
 
     @Override
-    public void eliminarOrdenPorId(int idOrden) {
-        if (!ordenRepository.existsById(idOrden)) {
-            throw new RecursoNoEncontradoException("Error! La orden con el ID " + idOrden + " no fue encontrada en la base de datos.");
+    public void eliminarOrdenPorId(int id) {
+        if (!ordenRepository.existsById(id)) {
+            throw new RecursoNoEncontradoException("Error! La orden con el ID " + id + " no fue encontrada en la base de datos.");
         }
-        ordenRepository.deleteById(idOrden);
+        ordenRepository.deleteById(id);
     }
 
     @Override
-    public String actualizarOrden(int idOrden, OrdenesModel ordenDetalles) {
-        OrdenesModel ordenExistente = ordenRepository.findById(idOrden)
-            .orElseThrow(() -> new RecursoNoEncontradoException("Error! La orden con el ID " + idOrden + " no fue encontrada."));
+    public String actualizarOrden(int id, OrdenesModel ordenDetalles) {
+        OrdenesModel ordenExistente = ordenRepository.findById(id)
+            .orElseThrow(() -> new RecursoNoEncontradoException("Error! La orden con el ID " + id + " no fue encontrada."));
         
         // Actualizar los detalles de la orden existente
         ordenExistente.setFechaorden(ordenDetalles.getFechaorden());
         ordenExistente.setContiene(ordenDetalles.getContiene());
         
         ordenRepository.save(ordenExistente);
-        return "La orden con el ID " + idOrden + " fue actualizada con éxito.";
+        return "La orden con el ID " + id + " fue actualizada con éxito.";
     }
     
 }

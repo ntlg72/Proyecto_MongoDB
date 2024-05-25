@@ -50,14 +50,13 @@ public class PromocionesServiceImp implements IPromocionesService{
         promocionesRepository.save(promocion);
         return "La promoción con el Id: " + promocion.getId() + " fue creada con éxito.";
     }
-    
 
     // bucar una promocion por su id
     @Override
     public PromocionesModel buscarPromocionPorId(int IdPromociones){
         Optional<PromocionesModel> promocionRecuperado = promocionesRepository.findById(IdPromociones);
         return promocionRecuperado.orElseThrow(() -> new RecursoNoEncontradoException(
-            "Error! La promocion con el Id"+ IdPromociones+". No fue encontrada"
+            "Error! La promocion con el Id"+ IdPromociones+" no fue encontrada"
         ));
     }
 
@@ -70,7 +69,7 @@ public class PromocionesServiceImp implements IPromocionesService{
     @Override
     public void eliminarPromocionesPorId(int IdPromociones){
         if(!promocionesRepository.existsById(IdPromociones)){
-            throw new RecursoNoEncontradoException("Error!. La promocion con el Id"+IdPromociones+"No fue encontrando.");
+            throw new RecursoNoEncontradoException("Error!. La promocion con el Id "+IdPromociones+" no fue encontrando.");
         }
     promocionesRepository.deleteById(IdPromociones);
     }
