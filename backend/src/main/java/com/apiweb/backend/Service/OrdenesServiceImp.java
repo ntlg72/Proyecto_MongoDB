@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.Contiene;
@@ -13,6 +14,8 @@ import com.apiweb.backend.Model.Talla;
 import com.apiweb.backend.Repository.IOrdenesRepository;
 import com.apiweb.backend.Repository.IProductosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
+
+@Service
 
 public class OrdenesServiceImp implements IOrdenesService{
 
