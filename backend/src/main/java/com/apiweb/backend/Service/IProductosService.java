@@ -5,6 +5,8 @@ import java.util.List;
 import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
 
+
+
 public interface IProductosService {
     // Guardar Producto
     String guardarProducto(ProductosModel Productos,int idUsuario, String username);
@@ -16,7 +18,7 @@ public interface IProductosService {
     void eliminarProductoPorId(int idProducto,int idUsuario, String username);
     // actualizar producto por id
     // Guardar Producto paquete
-    String guardarProductoPaquete (ProductosModel producto,int idUsuario, String username); 
+    String guardarProductoPaquete(ProductosModel producto, int idUsuario, String username); 
     //Guardar comentario
     String guardarComentario (int idProducto, int idUsuario, Comentario comentario );
 }

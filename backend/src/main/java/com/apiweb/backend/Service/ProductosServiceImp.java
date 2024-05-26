@@ -2,6 +2,7 @@ package com.apiweb.backend.Service;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,7 @@ public class ProductosServiceImp implements IProductosService {
                 .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
 
         if (!esAdministrador) {
-            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+            throw new RecursoNoEncontradoException("Error! El usuario no es administrador");
         }
 
         productosRepository.save(productos);
@@ -66,7 +67,7 @@ public class ProductosServiceImp implements IProductosService {
                 .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
 
         if (!esAdministrador) {
-            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+            throw new RecursoNoEncontradoException("Error! El usuario no es administrador");
         }
 
         if (!productosRepository.existsById(idProducto)) {
@@ -76,29 +77,33 @@ public class ProductosServiceImp implements IProductosService {
     }
 
     @Override
-    public String guardarProductoPaquete (ProductosModel producto, int idUsuario, String username) {
+    public String guardarProductoPaquete(ProductosModel producto, int idUsuario, String username) {
+        // Verificar si el usuario existe
         UsuariosModel usuario = usuariosRepository.findById(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
-
+    
         // Verificar si el usuario ya tiene una cuenta de administrador
         boolean esAdministrador = usuario.getCuentas().stream()
                 .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
-
+    
         if (!esAdministrador) {
-            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+            throw new RecursoNoEncontradoException("Error! El usuario no es administrador");
         }
-
-        for (ProductosPaquete ProductosPaquete : producto.getProductospaquete()){
-            Integer id = ProductosPaquete.getIdProducto();
-            ProductosModel Producto = productosRepository.findById(id).orElse(null);
-            if(Producto == null){
-                return "Error el producto con id: "+id+", no existe";
+    
+        // Verificar que todos los productos en el paquete existen
+        for (ProductosPaquete productosPaquete : producto.getProductospaquete()) {
+            Integer idProducto = productosPaquete.getIdProducto();
+            ProductosModel productoExistente = productosRepository.findById(idProducto).orElse(null);
+            if (productoExistente == null) {
+                return "Error: el producto con id: " + idProducto + " no existe.";
             }
-            ProductosPaquete.setIdProducto(id);
         }
+    
+        // Guardar el producto paquete
         productosRepository.save(producto);
-        return "El Producto Paquete con el Id"+ producto.getId()+ "fue creado con exito";
+        return "El Producto Paquete con el Id " + producto.getId() + " fue creado con éxito.";
     }
+    
 
     @Transactional
     public String guardarComentario(int idProducto, int idUsuario, Comentario comentario) {

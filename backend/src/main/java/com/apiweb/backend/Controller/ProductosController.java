@@ -30,9 +30,15 @@ public class ProductosController {
     public ResponseEntity<String> guardarProducto(
         @RequestBody ProductosModel producto,
         @PathVariable("idusuario") int idUsuario,
-        @PathVariable("username") String username) {
-        return new ResponseEntity<String>(productoService.guardarProducto(producto,idUsuario,username),HttpStatus.OK);
+        @PathVariable("username") String username){
+        try {
+         String resultado = productoService.guardarProducto(producto,idUsuario,username);
+         return ResponseEntity.ok(resultado);
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
+    
 
     // Obtener un producto por ID
     @GetMapping("/buscarporid/{id}")
@@ -73,14 +79,20 @@ public class ProductosController {
 
     // Crear un nuevo producto paquete
     @PostMapping("/crearpaquete/{idusuario}/{username}")
-    public ResponseEntity<String> crearProductoPaquete(
+    public ResponseEntity<String> guardarProductoPaquete(
         @RequestBody ProductosModel producto,
         @PathVariable("idusuario") int idUsuario,
-        @PathVariable("username") String username
-        ) {
-        String id = productoService.guardarProductoPaquete(producto, idUsuario, username);
-        return ResponseEntity.ok("Producto paquete creado con ID: " + id);
+        @PathVariable("username") String username) {
+        try {
+            String resultado = productoService.guardarProductoPaquete(producto, idUsuario, username);
+            return ResponseEntity.ok(resultado);
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor.");
+        }
     }
+    
 
     @PostMapping("/{idProducto}/{idusuario}/comentarios/guardar")
     public ResponseEntity<String> guardarComentario(

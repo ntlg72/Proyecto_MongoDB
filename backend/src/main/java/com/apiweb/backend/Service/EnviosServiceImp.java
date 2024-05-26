@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.EnviosModel;
@@ -19,30 +20,83 @@ public class EnviosServiceImp implements IEnviosService {
     @Autowired IEnviosRepository enviosRepository;
     @Autowired IOrdenesRepository  ordenesRepository;
 
-    @Override
+    private static final List<String> CIUDADES_DISPONIBLES = Arrays.asList(
+        "Medellín", "Barranquilla", "Bogotá", "Cartagena", "Tunja",
+        "Manizales", "Florencia", "Popayán", "Valledupar", "Montería",
+        "Zipaquirá", "Quibdó", "Neiva", "Riohacha", "Santa Marta"
+    );
+
+    
+    private Double obtenerPrecioEnvio(String ciudad) {
+        switch (ciudad) {
+            case "Medellín":
+                return 10000.0;
+            case "Barranquilla":
+                return 15000.0;
+            case "Bogotá":
+                return 10000.0;
+            case "Cartagena":
+                return 15000.0;
+            case "Tunja":
+                return 12000.0;
+            case "Manizales":
+                return 17000.0;
+            case "Florencia":
+                return 18000.0;
+            case "Popayán":
+                return 11000.0;
+            case "Valledupar":
+                return 13000.0;
+            case "Montería":
+                return 14000.0;
+            case "Zipaquirá":
+                return 11000.0;
+            case "Quibdó":
+                return 19000.0;
+            case "Neiva":
+                return 12000.0;
+            case "Riohacha":
+                return 15000.0;
+            case "Santa Marta":
+                return 17000.0;
+            default:
+                return null;}
+        }
+
+    @Transactional
     public String guardarEnvio(EnviosModel envio) {
 
         Integer ordenId = envio.getIdorden();
         OrdenesModel orden = ordenesRepository.findById(ordenId).orElse(null);
-        
+
         if (orden == null) {
-            return "Error! La orden con el ID " +ordenId+ " no fue encontrado en la BD.";
+            return "Error! La orden con el ID " + ordenId + " no fue encontrada en la BD.";
         }
 
-        List<String> ciudades = Arrays.asList(
-            "Medellín", "Barranquilla", "Bogotá", "Cartagena", "Tunja",
-            "Manizales", "Florencia", "Popayán", "Valledupar", "Montería",
-            "Zipaquirá", "Quibdó", "Neiva", "Riohacha", "Santa Marta"
-        );
         String ciudadEnvio = envio.getDetallesubicacion().getCiudad();
-        if (!ciudades.contains(ciudadEnvio)) {
+        if (!CIUDADES_DISPONIBLES.contains(ciudadEnvio)) {
             return "Error! El envío a la ciudad seleccionada no está disponible.";
         }
 
+        Double valorEnvio = obtenerPrecioEnvio(ciudadEnvio);
+        if (valorEnvio == null) {
+            return "Error! No se encontró el precio de envío para la ciudad " + ciudadEnvio;
+        }
+
+        // Asignar el valor de envío al envío
+        envio.setValorenvio(valorEnvio);
+        // Guardar el envío
         enviosRepository.save(envio);
 
-        return "El envío " + envio.getId() + " fue creado con éxito.";
+        // Actualizar el valor total de la orden con el valor de envío
+        double nuevoValorTotal = orden.getValortotal() + valorEnvio;
+        orden.setValortotal(nuevoValorTotal);
+        // Guardar la orden actualizada
+        ordenesRepository.save(orden);
+
+        return "El envío " + envio.getId() + " fue creado con éxito y el valor total de la orden se ha actualizado.";
     }
+        
 
 
     @Override
