@@ -24,6 +24,6 @@ public class OrdenesModel {
     private Integer idusuario;
     private double valortotal;
     private Date fechaorden;
-    private Pago Pago;
+    private Pago pago;
     private List<Contiene> contiene = new ArrayList<>();
 }

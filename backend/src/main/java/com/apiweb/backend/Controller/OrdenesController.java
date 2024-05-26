@@ -18,13 +18,18 @@ public class OrdenesController {
 
     @Autowired IOrdenesService ordenesService;
 
-    // Guardar Orden
+    // Guardar Orden 
     @PostMapping("/guardar")
     public ResponseEntity<String> crearOrden(@RequestBody OrdenesModel orden) {
-        return new ResponseEntity<String>(ordenesService.guardarOrden(orden),HttpStatus.OK);
+        try {
+            String resultado = ordenesService.guardarOrden(orden);
+            return new ResponseEntity<>(resultado, HttpStatus.OK);
+        } catch (RecursoNoEncontradoException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
-    //Buscar orden por id
+    //Buscar orden por id 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarOrdenPorId(@PathVariable Integer id) {
         try {
@@ -41,22 +46,19 @@ public class OrdenesController {
         List<OrdenesModel> ordenes = ordenesService.listarOrdenes();
         return new ResponseEntity<List<OrdenesModel>>(ordenes, HttpStatus.OK);
     }
-
-    //Actualizar Ordenes por id
-    @PutMapping("/{id}")
-    public ResponseEntity<String> actualizarOrden(@PathVariable int id, @RequestBody OrdenesModel ordenDetalles) {
-        try {
-            String resultado = ordenesService.actualizarOrden(id, ordenDetalles);
-            return ResponseEntity.ok(resultado);
-        } catch (RecursoNoEncontradoException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la orden");
-        }
+   
+   //Actualizar Ordenes por id
+   @PatchMapping("/actualizarorden/{id}")
+   public ResponseEntity<String> actualizarOrden(@PathVariable("id") int id, @RequestBody OrdenesModel ordenDetalles) {
+       try {
+           String resultado = ordenesService.actualizarOrden(id, ordenDetalles);
+           return ResponseEntity.ok(resultado);
+       } catch (RecursoNoEncontradoException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+       }
     }
-
-
-    // Eliminar Ordenes por id
+   
+    // Eliminar Ordenes por id 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarOrdenPorId(@PathVariable Integer id) {
     try {
@@ -66,5 +68,7 @@ public class OrdenesController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
     }
+
+
 
 }

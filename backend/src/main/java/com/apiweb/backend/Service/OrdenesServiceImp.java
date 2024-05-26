@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.Contiene;
 import com.apiweb.backend.Model.OrdenesModel;
-import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Model.Talla;
 import com.apiweb.backend.Repository.IOrdenesRepository;
@@ -23,72 +22,69 @@ public class OrdenesServiceImp implements IOrdenesService{
     
     @Autowired IProductosRepository productoRepository;
 
+    @Autowired ProductosServiceImp productoService;
+
     @Override
     public String guardarOrden(OrdenesModel orden) {
-        int idUsuario = orden.getIdusuario(); // Obtiene el idUsuario de la orden
-    
-        // Verifica si el usuario existe
-        Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(idUsuario);
-        if (!usuarioOptional.isPresent()) {
-            throw new RecursoNoEncontradoException("Error! El usuario con el Id " + idUsuario + " no existe en la base de datos.");
-        }
-    
-        // Verifica si todos los productos de la orden existen y si la talla y cantidad están disponibles
-        StringBuilder respuesta = new StringBuilder();
-        boolean todosProductosExisten = true;
-    
-        for (Contiene contiene : orden.getContiene()) {
-            Integer idProducto = contiene.getIdproducto();
-            Optional<ProductosModel> productoOptional = productoRepository.findById(idProducto);
-    
-            if (!productoOptional.isPresent()) {
-                respuesta.append("Error! El producto con el id ").append(idProducto).append(" no existe en la base de datos.\n");
-                todosProductosExisten = false;
+    int idUsuario = orden.getIdusuario(); // Obtiene el idUsuario de la orden
+    // Verifica si el usuario existe
+    usuariosRepository.findById(idUsuario)
+            .orElseThrow(() -> new RecursoNoEncontradoException("Error! El usuario con el Id " + idUsuario + " no existe en la base de datos."));
+
+    // Verifica si todos los productos de la orden existen y si la talla y cantidad están disponibles
+    StringBuilder respuesta = new StringBuilder();
+    boolean todosProductosExisten = true;
+    double valorTotalOrden = 0;
+
+    for (Contiene contiene : orden.getContiene()) {
+        Integer idProducto = contiene.getIdproducto();
+        ProductosModel producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error! El producto con el id " + idProducto + " no existe en la base de datos."));
+
+        String tallaSolicitada = contiene.getTalla();
+        int cantidadSolicitada = contiene.getCantidad();
+        Talla tallaProducto = producto.getTalla().stream()
+                .filter(talla -> talla.getNombre().equals(tallaSolicitada))
+                .findFirst()
+                .orElse(null);
+
+        if (tallaProducto == null || tallaProducto.getCantidad() < cantidadSolicitada) {
+            respuesta.append("Error! El producto con el id ").append(idProducto);
+            if (tallaProducto == null) {
+                respuesta.append(" no tiene la talla ").append(tallaSolicitada).append(".\n");
             } else {
-                ProductosModel producto = productoOptional.get();
-                String tallaSolicitada = contiene.getTalla();
-                int cantidadSolicitada = contiene.getCantidad();
-                boolean tallaEncontrada = false;
-    
-                // Verifica si la talla solicitada está disponible en el array de tallas
-                for (Talla tallaProducto : producto.getTalla()) {
-                    if (tallaProducto.getNombre().equals(tallaSolicitada)) {
-                        tallaEncontrada = true;
-                        if (tallaProducto.getCantidad() >= cantidadSolicitada) {
-                            // Actualiza la cantidad de la talla en el producto si la orden está pagada
-                            if (orden.getPago().isPagado()) {
-                                tallaProducto.setCantidad(tallaProducto.getCantidad() - cantidadSolicitada);
-                                productoRepository.save(producto);
-                            }
-                        } else {
-                            respuesta.append("Error! El producto con el id ").append(idProducto)
-                                    .append(" no tiene suficiente cantidad para la talla ").append(tallaSolicitada).append(".\n");
-                            todosProductosExisten = false;
-                        }
-                    }
-                }
-    
-                if (!tallaEncontrada) {
-                    respuesta.append("Error! El producto con el id ").append(idProducto)
-                            .append(" no tiene la talla ").append(tallaSolicitada).append(".\n");
-                    todosProductosExisten = false;
-                }
+                respuesta.append(" no tiene suficiente cantidad para la talla ").append(tallaSolicitada).append(".\n");
             }
+            todosProductosExisten = false;
+        } else if (orden.getPago().isPagado()) {
+            tallaProducto.setCantidad(tallaProducto.getCantidad() - cantidadSolicitada);
+            productoRepository.save(producto);
         }
-    
-        // Si todos los productos existen y las tallas están disponibles, guarda la orden
-        if (todosProductosExisten) {
-            ordenRepository.save(orden);
-            respuesta.append("La orden con el ID: ").append(orden.getId()).append(" fue creada con éxito.");
-        } else {
-            respuesta.append("No se puede crear la orden porque uno o más productos no existen o no tienen suficiente cantidad en la talla solicitada.");
-        }
-    
-        return respuesta.toString().trim();
+        
+        // Sumar el precio del producto al valor total de la orden
+        valorTotalOrden += cantidadSolicitada * producto.getPrecio();
     }
+
+    // Si todos los productos existen y las tallas están disponibles, guarda la orden
+    if (todosProductosExisten) {
+        // Actualiza el valor de pago en la orden
+        orden.getPago().setValorpago(valorTotalOrden);
+        
+        // Guarda la orden en el repositorio
+        ordenRepository.save(orden);
+        respuesta.append("La orden con el ID: ").append(orden.getId()).append(" fue creada con éxito.");
+    } else {
+        respuesta.append("No se puede crear la orden porque uno o más productos no existen o no tienen suficiente cantidad en la talla solicitada.");
+    }
+
+    return respuesta.toString().trim();
+    }
+
+
+
     @Override
     public OrdenesModel buscarOrdenPorId(int idOrden) {
-        Optional <OrdenesModel> ordenRecuperada = ordenRepository.findById(idOrden);
+    Optional <OrdenesModel> ordenRecuperada = ordenRepository.findById(idOrden);
         return ordenRecuperada.orElseThrow(() -> new RecursoNoEncontradoException(
             "Error! La orden con el ID " + idOrden + " no fue encontrada."
         ));
@@ -103,28 +99,22 @@ public class OrdenesServiceImp implements IOrdenesService{
 
     @Override
     public String actualizarOrden(int id, OrdenesModel ordenDetalles) {
-    Optional<OrdenesModel> ordenExistenteOpt = ordenRepository.findById(id);
-    if (!ordenExistenteOpt.isPresent()) {
-        throw new RecursoNoEncontradoException("Error! La orden con el ID " + id + " no fue encontrada.");
-    }
+        OrdenesModel orden = ordenRepository.findById(id)
+        .orElseThrow(() -> new RecursoNoEncontradoException("Error! la orden con el ID " + id + " no fue encontrado en la BD."));
 
-    OrdenesModel ordenExistente = ordenExistenteOpt.get();
-
-    // Verificar si la orden esta pagada
-    boolean estaPagado = ordenExistente.getPago().isPagado();
+        boolean estaPagado = orden.getPago() != null && orden.getPago().isPagado();
 
     if (estaPagado) {
-        throw new RecursoNoEncontradoException("Error! No se puede actualizar la orden con el ID " + id + " debido a que ya está pagada.");
+        throw new RecursoNoEncontradoException("Error! No se puede actualizar la orden con el ID " + id + " porque ya está pagada.");
     }
 
-    // Actualizar los detalles de la orden
-    ordenExistente.setFechaorden(ordenDetalles.getFechaorden());
-    ordenExistente.setContiene(ordenDetalles.getContiene());
+        // Actualizar los detalles de la orden
+        orden.setContiene(ordenDetalles.getContiene());
 
-    // Guardar los cambios en el repositorio
-    ordenRepository.save(ordenExistente);
+        // Guardar los cambios en el repositorio
+        ordenRepository.save(orden);
 
-    return "Orden actualizada con exito";
+        return "Orden con el id " +id+ " fue actualizada con exito";
     }
 
     @Override
@@ -134,6 +124,7 @@ public class OrdenesServiceImp implements IOrdenesService{
         }
         ordenRepository.deleteById(idOrden);
     }
+
 }
 
 
