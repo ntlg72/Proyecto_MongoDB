@@ -12,16 +12,32 @@ import com.apiweb.backend.Model.Contiene;
 import com.apiweb.backend.Model.OrdenesModel;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Model.ProductosPaquete;
+import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IProductosRepository;
+import com.apiweb.backend.Repository.IUsuariosRepository;
 import com.apiweb.backend.Repository.IOrdenesRepository;
 
 @Service
 public class ProductosServiceImp implements IProductosService {
     @Autowired IProductosRepository productosRepository;
     @Autowired IOrdenesRepository ordenesRepository;
+    @Autowired IUsuariosRepository usuariosRepository;
 
     @Override
-    public String guardarProducto(ProductosModel productos){
+    public String guardarProducto(ProductosModel productos, int idUsuario, String username){
+
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
+
+        // Verificar si el usuario ya tiene una cuenta de administrador
+        boolean esAdministrador = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
+
+        if (!esAdministrador) {
+            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+        }
+
         productosRepository.save(productos);
         return "El producto "+productos.getNombre()+" del usuario con el id "+productos.getId()+" fue creado con exito";
     }
@@ -41,7 +57,18 @@ public class ProductosServiceImp implements IProductosService {
     }
 
     @Override
-    public void eliminarProductoPorId(int idProducto) {
+    public void eliminarProductoPorId(int idProducto, int idUsuario, String username) {
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
+
+        // Verificar si el usuario ya tiene una cuenta de administrador
+        boolean esAdministrador = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
+
+        if (!esAdministrador) {
+            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+        }
+
         if (!productosRepository.existsById(idProducto)) {
         throw new RecursoNoEncontradoException("Error!. El usuario con el Id " +idProducto+ " no fue encontrado en la BD.");
     }
@@ -49,7 +76,18 @@ public class ProductosServiceImp implements IProductosService {
     }
 
     @Override
-    public String guardarProductoPaquete (ProductosModel producto) {
+    public String guardarProductoPaquete (ProductosModel producto, int idUsuario, String username) {
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
+
+        // Verificar si el usuario ya tiene una cuenta de administrador
+        boolean esAdministrador = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
+
+        if (!esAdministrador) {
+            throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+        }
+
         for (ProductosPaquete ProductosPaquete : producto.getProductospaquete()){
             Integer id = ProductosPaquete.getIdProducto();
             ProductosModel Producto = productosRepository.findById(id).orElse(null);
@@ -63,37 +101,36 @@ public class ProductosServiceImp implements IProductosService {
     }
 
     @Transactional
-    public String guardarComentario (int idProducto, int idUsuario, Comentario comentario ){
-        //Listar las ordenes realizadas por un usuario
+    public String guardarComentario(int idProducto, int idUsuario, Comentario comentario) {
+    // Listar las órdenes realizadas por un usuario
+    List<OrdenesModel> ordenes = ordenesRepository.findByIdusuario(idUsuario);
 
-        List<OrdenesModel> ordenes = ordenesRepository.findByIdusuario(idUsuario);
-        //Verificar si alguna de las ordenes contiene el producto
-    boolean haOrdenado = false;
+    // Verificar si alguna de las órdenes contiene el producto y está pagada
+    boolean haOrdenadoYPagado = false;
 
     for (OrdenesModel orden : ordenes) {
         for (Contiene contiene : orden.getContiene()) {
-            if (contiene.getIdproducto().equals(idProducto)) {
-                haOrdenado = true;
+            if (contiene.getIdproducto().equals(idProducto) && orden.getPago() != null && orden.getPago().isPagado()) {
+                haOrdenadoYPagado = true;
                 break;
             }
         }
-        if (haOrdenado) {
-            break; // Si ya ha ordenado el producto, sal del bucle de órdenes
+        if (haOrdenadoYPagado) {
+            break; // Si ya ha ordenado el producto y está pagada, sal del bucle de órdenes
         }
     }
 
-    
-    if (!haOrdenado) {
-                throw new RecursoNoEncontradoException("Error! El usuario no ha comprado el producto");
-            }
-    
-            ProductosModel producto = productosRepository.findById(idProducto)
-            .orElseThrow(() -> new RecursoNoEncontradoException("El producto con el Id " + idProducto + "no fue encontrado"));
-    
-            comentario.setIdusuario(idUsuario);
-            producto.getComentarios().add(comentario);
-            productosRepository.save(producto);
-    
-            return "El comentario fue creado con exito";
-        }
+    if (!haOrdenadoYPagado) {
+        throw new RecursoNoEncontradoException("Error! El usuario no ha comprado el producto o la orden no está pagada");
+    }
+
+    ProductosModel producto = productosRepository.findById(idProducto)
+            .orElseThrow(() -> new RecursoNoEncontradoException("El producto con el Id " + idProducto + " no fue encontrado"));
+
+    comentario.setIdusuario(idUsuario);
+    producto.getComentarios().add(comentario);
+    productosRepository.save(producto);
+
+    return "El comentario fue creado con éxito";
+}
 }

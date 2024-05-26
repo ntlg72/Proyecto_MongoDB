@@ -26,9 +26,12 @@ public class ProductosController {
     @Autowired IProductosService productoService;
 
     // Crear un nuevo producto
-    @PostMapping("/guardar")
-    public ResponseEntity<String> crearProducto(@RequestBody ProductosModel producto) {
-        return new ResponseEntity<String>(productoService.guardarProducto(producto),HttpStatus.OK);
+    @PostMapping("/guardar/{idusuario}/{username}")
+    public ResponseEntity<String> guardarProducto(
+        @RequestBody ProductosModel producto,
+        @PathVariable("idusuario") int idUsuario,
+        @PathVariable("username") String username) {
+        return new ResponseEntity<String>(productoService.guardarProducto(producto,idUsuario,username),HttpStatus.OK);
     }
 
     // Obtener un producto por ID
@@ -51,17 +54,31 @@ public class ProductosController {
     }
 
     // Eliminar un producto por ID
-    @DeleteMapping("eliminarporid/{id}")
-    public ResponseEntity<String> eliminarProductoPorId(@PathVariable int id) {
-        productoService.eliminarProductoPorId(id);
-        return ResponseEntity.ok("Producto eliminado con ID: " + id);
+    @DeleteMapping("eliminarporid/{id}/{idusuario}/{username}")
+    public ResponseEntity<String> eliminarProductoPorId(
+            @PathVariable("id") int idProducto,
+            @PathVariable("idusuario") int idUsuario,
+            @PathVariable("username") String username) {
+
+        try {
+            productoService.eliminarProductoPorId(idProducto, idUsuario, username);
+            return ResponseEntity.ok("Producto con id " + idProducto + " eliminada correctamente");
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la promoción: " + e.getMessage());
+        }
     }
 
 
     // Crear un nuevo producto paquete
-    @PostMapping("/crearpaquete")
-    public ResponseEntity<String> crearProductoPaquete(@RequestBody ProductosModel producto) {
-        String id = productoService.guardarProductoPaquete(producto);
+    @PostMapping("/crearpaquete/{idusuario}/{username}")
+    public ResponseEntity<String> crearProductoPaquete(
+        @RequestBody ProductosModel producto,
+        @PathVariable("idusuario") int idUsuario,
+        @PathVariable("username") String username
+        ) {
+        String id = productoService.guardarProductoPaquete(producto, idUsuario, username);
         return ResponseEntity.ok("Producto paquete creado con ID: " + id);
     }
 
