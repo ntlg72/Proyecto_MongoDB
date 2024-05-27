@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.ProductosPorCategoria;
 import com.apiweb.backend.Model.TotalProducto;
 import com.apiweb.backend.Model.ValoracionAlta;
 import com.apiweb.backend.Model.productosMasComentarios;
@@ -33,4 +34,6 @@ public interface IProductosService {
     List<productosMasComentarios> findProductosMasComentarios();
 
     List<TotalProducto>  obtenerTotalCantidadPorProducto();
+
+    List<ProductosPorCategoria> productosPorCategoria();
 }

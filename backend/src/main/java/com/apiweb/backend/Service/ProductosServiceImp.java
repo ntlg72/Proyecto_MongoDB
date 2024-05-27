@@ -13,6 +13,7 @@ import com.apiweb.backend.Model.Contiene;
 import com.apiweb.backend.Model.OrdenesModel;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Model.ProductosPaquete;
+import com.apiweb.backend.Model.ProductosPorCategoria;
 import com.apiweb.backend.Model.TotalProducto;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ValoracionAlta;
@@ -186,5 +187,11 @@ public class ProductosServiceImp implements IProductosService {
     @Override
     public List<TotalProducto> obtenerTotalCantidadPorProducto(){
         return productosRepository.obtenerTotalCantidadPorProducto();
+    }
+
+    @Override
+    public List<ProductosPorCategoria> productosPorCategoria (){
+        return productosRepository.productosPorCategoria();
+
     }
 }

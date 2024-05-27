@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.ProductosPorCategoria;
 import com.apiweb.backend.Model.TotalProducto;
 import com.apiweb.backend.Model.ValoracionAlta;
 import com.apiweb.backend.Model.productosMasComentarios;
@@ -146,6 +147,12 @@ public class ProductosController {
     public ResponseEntity<List<TotalProducto>> obtenerTotalCantidadPorProducto(){
         List<TotalProducto> TotalProducto = productoService.obtenerTotalCantidadPorProducto();
         return new ResponseEntity<>(TotalProducto, HttpStatus.OK);
+    }
+
+    @GetMapping ("/ProductosCategoria")
+    public ResponseEntity<List<ProductosPorCategoria>> productosPorCategoria (){
+        List<ProductosPorCategoria> producto = productoService.productosPorCategoria();
+        return new ResponseEntity<List<ProductosPorCategoria>>(producto, HttpStatus.OK);
     }
 
 }

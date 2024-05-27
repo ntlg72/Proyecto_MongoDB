@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.ProductosPorCategoria;
 import com.apiweb.backend.Model.TotalProducto;
 import com.apiweb.backend.Model.ValoracionAlta;
 import com.apiweb.backend.Model.productosMasComentarios;
@@ -37,4 +38,10 @@ public interface IProductosRepository extends MongoRepository<ProductosModel, In
     "{$project: {_id: 0,idProducto: '$_id.id',Producto: '$_id.Producto',TotalProducto: 1}}"
     })
     List<TotalProducto>  obtenerTotalCantidadPorProducto();
+
+    @Aggregation(pipeline = {
+        "{$group: {_id: '$categoria', TotalPCategoria: { $sum: 1 }}}",
+        "{$project: {_id: 0, Categoria: '$_id', TotalPCategoria: 1}}"
+    })
+    List<ProductosPorCategoria> productosPorCategoria();
 }

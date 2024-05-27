@@ -25,4 +25,6 @@ public interface IOrdenesService {
 
     List<TopProductomenos> getTop3ProductosMenosVendidos();
 
+
+    
 }
