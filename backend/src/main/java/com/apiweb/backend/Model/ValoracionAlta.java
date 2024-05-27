@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValoracionAlta {
-    private String Nombre;
-    private String Valoracion;
+    private String nombre;
+    private String valoracion;
 }

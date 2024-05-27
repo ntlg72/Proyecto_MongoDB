@@ -16,9 +16,8 @@ import com.apiweb.backend.Model.productosMasComentarios;
 public interface IProductosRepository extends MongoRepository<ProductosModel, Integer>{
     @Aggregation(pipeline = {
         "{ $unwind: { path: '$comentario' } }",
-        "{$match: {'comentario.valoracion': {$in: ['cuatro', 'cinco']}}}",
-        "{$project: {_id: 0, Nombre: '$nombre', Valoracion: '$comentario.valoracion'}}"
-    
+        "{ $match: { 'comentario.valoracion': { $in: ['cuatro', 'cinco'] } } }",
+        "{ $project: { _id: 0, nombre: '$nombre', valoracion: '$comentario.valoracion' } }"
     })
     List<ValoracionAlta> obtenerValoracionesAltas();
 
