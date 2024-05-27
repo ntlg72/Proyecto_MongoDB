@@ -47,16 +47,7 @@ public class OrdenesController {
         return new ResponseEntity<List<OrdenesModel>>(ordenes, HttpStatus.OK);
     }
    
-   //Actualizar Ordenes por id
-   @PatchMapping("/actualizarorden/{id}")
-   public ResponseEntity<String> actualizarOrden(@PathVariable("id") int id, @RequestBody OrdenesModel ordenDetalles) {
-       try {
-           String resultado = ordenesService.actualizarOrden(id, ordenDetalles);
-           return ResponseEntity.ok(resultado);
-       } catch (RecursoNoEncontradoException e) {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-       }
-    }
+    
    
     // Eliminar Ordenes por id 
     @DeleteMapping("/{id}")
@@ -67,6 +58,20 @@ public class OrdenesController {
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+    }
+
+    //Actualizar Ordenes por id
+    @PatchMapping("/actualizarorden/{id}/{idusuario}")
+    public ResponseEntity<String> actualizarOrden(
+        @PathVariable("id") int id, 
+        @PathVariable("idusuario") int idusuario,
+        @RequestBody OrdenesModel ordenDetalles) {
+       try {
+           String resultado = ordenesService.actualizarOrden(id,idusuario,ordenDetalles);
+           return ResponseEntity.ok(resultado);
+       } catch (RecursoNoEncontradoException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+       }
     }
 
 

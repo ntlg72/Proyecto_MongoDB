@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,5 +56,20 @@ public class EnviosController {
         }
 
     }
+
+    @PatchMapping ("/actualizar/{id}")
+    public ResponseEntity<String> actualizarEnvio(
+        @PathVariable int id, 
+        @RequestBody EnviosModel envio) {
+         try {
+            envio.setId(id);
+            String resultado = enviosService.actualizarEnvio(envio);
+            return ResponseEntity.ok(resultado);
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+    
+
 
 }

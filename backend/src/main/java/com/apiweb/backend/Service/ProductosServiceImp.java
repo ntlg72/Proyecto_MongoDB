@@ -40,7 +40,7 @@ public class ProductosServiceImp implements IProductosService {
         }
 
         productosRepository.save(productos);
-        return "El producto "+productos.getNombre()+" del usuario con el id "+productos.getId()+" fue creado con exito";
+        return "El producto "+productos.getNombre()+" con el id "+productos.getId()+" fue creado con exito";
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ProductosServiceImp implements IProductosService {
         }
 
         if (!productosRepository.existsById(idProducto)) {
-        throw new RecursoNoEncontradoException("Error!. El usuario con el Id " +idProducto+ " no fue encontrado en la BD.");
+        throw new RecursoNoEncontradoException("Error!. El producto con el Id " +idProducto+ " no fue encontrado en la BD.");
     }
     productosRepository.deleteById(idProducto);
     }
@@ -133,9 +133,41 @@ public class ProductosServiceImp implements IProductosService {
             .orElseThrow(() -> new RecursoNoEncontradoException("El producto con el Id " + idProducto + " no fue encontrado"));
 
     comentario.setIdusuario(idUsuario);
-    producto.getComentarios().add(comentario);
+    producto.getComentario().add(comentario);
     productosRepository.save(producto);
 
     return "El comentario fue creado con éxito";
-}
+    
+    }
+
+    // actualizar producto 
+    @Transactional
+    public String actualizarProducto(ProductosModel productos, int idUsuario) {
+         // Verificar si el usuario existe en la base de datos
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
+
+        // Verificar si el usuario ya tiene una cuenta de administrador
+        boolean esAdministrador = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
+
+        if (!esAdministrador) {
+            throw new RecursoNoEncontradoException("Error! El usuario no es administrador");
+        }
+        // Verificar si el producto existe en la base de datos
+        ProductosModel productoExistente = productosRepository.findById(productos.getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: El producto con el Id " + productos.getId() + " no fue encontrado en la BD."));
+
+        // Actualizar los detalles del producto
+        productoExistente.setNombre(productos.getNombre());
+        productoExistente.setDescripcion(productos.getDescripcion());
+        productoExistente.setPrecio(productos.getPrecio());
+        productoExistente.setTalla(productos.getTalla());
+
+        // Guardar el producto actualizado
+        productosRepository.save(productoExistente);
+
+        return "El producto " + productoExistente.getNombre() + " con el id " + productos.getId() + " fue actualizado con éxito";
+
+    }
 }

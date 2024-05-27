@@ -128,7 +128,7 @@ public class UsuariosController {
 
     //actualizar email
     @PatchMapping("actualizarcontacto/email/{id}")
-    public ResponseEntity<?> actualizarInformacionContacto(
+    public ResponseEntity<String> actualizarInformacionContacto(
         @PathVariable("id") int idUsuario,
         @RequestBody String nuevoEmail) {
     try {
@@ -136,15 +136,8 @@ public class UsuariosController {
         return ResponseEntity.ok("Email actualizado correctamente.");
     } catch (RecursoNoEncontradoException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    } catch (DataIntegrityViolationException e) {
-        // Determinar si la excepción está relacionada con el email
-        String mensaje;
-        if (e.getMessage().contains("email")) {
-            mensaje = "El correo electrónico ya está en uso.";
-        } else {
-            mensaje = "Error al actualizar el email.";
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+    } catch (DuplicateKeyException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
-}
+    }
 }

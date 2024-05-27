@@ -21,4 +21,6 @@ public interface IProductosService {
     String guardarProductoPaquete(ProductosModel producto, int idUsuario, String username); 
     //Guardar comentario
     String guardarComentario (int idProducto, int idUsuario, Comentario comentario );
+    //Actualizar Producto
+    String actualizarProducto(ProductosModel productos, int idUsuario);
 }

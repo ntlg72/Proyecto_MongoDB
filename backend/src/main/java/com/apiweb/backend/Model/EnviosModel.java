@@ -22,6 +22,5 @@ public class EnviosModel {
     private String direccion;
     private double valorenvio;
     private String barrio;
-    private String infoadicional;
     private DetallesUbicacion detallesubicacion;
 }

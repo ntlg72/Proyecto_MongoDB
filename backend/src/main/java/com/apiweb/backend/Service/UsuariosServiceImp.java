@@ -107,7 +107,7 @@ public class UsuariosServiceImp implements IUsuariosService{
         usuariosRepository.save(usuario);
     } catch (DataIntegrityViolationException e) {
         // Manejar la excepción en caso de violación de integridad
-        throw new RecursoNoEncontradoException("Error: El username ya está en uso.");
+        throw new RecursoNoEncontradoException("Error: El username " +nuevaCuentaUsuario.getUsername()+" ya está en uso.");
     }
     }
     
@@ -173,7 +173,7 @@ public class UsuariosServiceImp implements IUsuariosService{
             usuariosRepository.save(usuario);
         } catch (DataIntegrityViolationException e) {
             // Se viola el índice único del nombre de usuario
-            throw new RecursoNoEncontradoException("El username" + username + "ya está en uso.");
+            throw new RecursoNoEncontradoException("El username " + nuevaCuentaUsuario.getUsername() + " ya está en uso.");
         }
 
     
@@ -183,23 +183,23 @@ public class UsuariosServiceImp implements IUsuariosService{
     @Override
     public void actualizarInformacionContacto(int idUsuario, String nuevoEmail) {
 
-        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
-        .orElseThrow(() -> new RecursoNoEncontradoException("Error! El usuario con el ID " + idUsuario + " no fue encontrado en la BD."));
-    
-    // Actualizar el email si el campo no es nulo ni vacío
-    if (nuevoEmail != null && !nuevoEmail.isEmpty()) {
-        usuario.setEmail(nuevoEmail);
-    }
-    
-    try {
-        usuariosRepository.save(usuario);
-    } catch (DataIntegrityViolationException e) {
-        // La excepción está relacionada con el email?
-        if (e.getMessage().contains("email")) {
-            throw new RecursoNoEncontradoException("El correo electrónico " + usuario.getEmail() + " ya está en uso.");
+        Optional<UsuariosModel> usuarioOptional = usuariosRepository.findById(idUsuario);
+        if (usuarioOptional.isPresent()) {
+            UsuariosModel usuario = usuarioOptional.get();
+            // Limpiar cualquier espacio en blanco alrededor del email
+            nuevoEmail = nuevoEmail.trim();
+            usuario.setEmail(nuevoEmail);
+            try {
+                usuariosRepository.save(usuario);
+            } catch (DataIntegrityViolationException e) {
+                if (e.getMessage().contains("email")) {
+                    throw new DuplicateKeyException("El correo electrónico " + nuevoEmail + " ya está en uso.");
+                } else {
+                    throw e; // Re-throw DataIntegrityViolationException for other cases
+                }
+            }
         } else {
-            throw new RecursoNoEncontradoException("Error al actualizar el email.");
+            throw new RecursoNoEncontradoException("El usuario con el ID " + idUsuario + " no fue encontrado en la base de datos.");
         }
     }
-}
 }

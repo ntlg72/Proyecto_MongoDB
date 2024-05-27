@@ -40,7 +40,7 @@ public class PromocionesServiceImp implements IPromocionesService{
             }
 
         for (ProductoPromocion productoPromocion : promocion.getProductos()) {
-            Integer idProducto = productoPromocion.getIdproducto();
+            Integer idProducto = productoPromocion.getIdproductos();
             Optional<ProductosModel> productoOptional = productosRepository.findById(idProducto);
 
             // Verificar si el producto existe
@@ -59,7 +59,7 @@ public class PromocionesServiceImp implements IPromocionesService{
             productosRepository.save(producto);
 
             // Asegurarse de que el id del producto está correctamente establecido en la promoción
-            productoPromocion.setIdproducto(idProducto);
+            productoPromocion.setIdproductos(idProducto);
         }
         promocionesRepository.save(promocion);
 
@@ -101,7 +101,7 @@ public class PromocionesServiceImp implements IPromocionesService{
         .anyMatch(cuenta -> cuenta.getUsername().equals(username) && cuenta.getTipousuario() == TipoUsuario.administrador);
     
         if (!esAdmin) {
-        throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear promociones.");
+        throw new RecursoNoEncontradoException("Error! Solo los administradores pueden eliminar promociones.");
         }
 
     // Verificar si la promoción existe
@@ -114,7 +114,7 @@ public class PromocionesServiceImp implements IPromocionesService{
 
     // Iterar sobre los productos asociados a la promoción
     for (ProductoPromocion productoPromocion : promocion.getProductos()) {
-        Integer idProducto = productoPromocion.getIdproducto();
+        Integer idProducto = productoPromocion.getIdproductos();
         ProductosModel producto = productosRepository.findById(idProducto)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error! El producto con id: " + idProducto + " no existe."));
 
@@ -134,5 +134,51 @@ public class PromocionesServiceImp implements IPromocionesService{
 
 
     //Actualizar promocion
+    @Transactional
+    public String actualizarpromocionPorId(PromocionesModel promocion, int idUsuario, String username){
+        
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario) 
+        .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
 
+        boolean esAdmin = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getUsername().equals(username) && cuenta.getTipousuario() == TipoUsuario.administrador);
+            
+        if (!esAdmin) {
+                throw new RecursoNoEncontradoException("Error! Solo los administradores pueden actualizar promociones.");
+            }
+         PromocionesModel promocionExistente = promocionesRepository.findById(promocion.getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: La promoción con el Id " + promocion.getId() + " no fue encontrada en la BD."));
+
+        //Actualizar los datos
+         promocionExistente.setDescuento(promocion.getDescuento());
+         promocionExistente.setFechainicio(promocion.getFechainicio());
+         promocionExistente.setFechafin(promocion.getFechafin());
+        // Limpiar la lista de productos existente
+        promocionExistente.getProductos().clear();
+        //Actualizar los productos
+        for (ProductoPromocion productoPromocion : promocion.getProductos()) {
+            Integer idProducto = productoPromocion.getIdproductos();
+            ProductosModel producto = productosRepository.findById(idProducto)
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Error! El producto con id: " + idProducto + " no existe."));
+        // Calcular el nuevo precio basado en el descuento
+            double descuento = promocion.getDescuento();
+            double nuevoPrecio = producto.getPrecio() * (1 - descuento);
+
+
+
+        // Actualizar el precio del producto
+        producto.setPrecio(nuevoPrecio);
+        productosRepository.save(producto);
+
+        // Asegurarse de que el id del producto está correctamente establecido en la promoción
+        productoPromocion.setIdproductos(idProducto);
+
+        // Añadir el producto a la promoción existente
+        promocionExistente.getProductos().add(productoPromocion);
+        }
+
+        // Guardar la promoción actualizada
+        promocionesRepository.save(promocionExistente);
+        return "Promoción actualizada exitosamente";
+    }
 }

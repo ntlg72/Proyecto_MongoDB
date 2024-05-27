@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -76,6 +77,27 @@ public class PromocionesController {
         }
     }
 
+    @PatchMapping("/actualizar/{idpro}/{iduser}/{username}")
+
+    public ResponseEntity<String> actualizarPromocionPorId(
+        @PathVariable("idpro") int id,
+        @PathVariable("iduser") int idUsuario,
+        @PathVariable("username") String username,
+        @RequestBody PromocionesModel promocion){
+        try{
+            promocion.setId(id);
+            
+            String resultado= promocionesService.actualizarpromocionPorId(promocion,idUsuario,username);
+            return ResponseEntity.ok(resultado);
+            } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la promoción: " + e.getMessage());
+        }
     }
+        
+    
+
+}
     
 

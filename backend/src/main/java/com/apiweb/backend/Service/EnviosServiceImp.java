@@ -89,12 +89,12 @@ public class EnviosServiceImp implements IEnviosService {
         enviosRepository.save(envio);
 
         // Actualizar el valor total de la orden con el valor de envío
-        double nuevoValorTotal = orden.getValortotal() + valorEnvio;
-        orden.setValortotal(nuevoValorTotal);
+        double nuevoValorTotal = orden.getSubtotal() + valorEnvio;
+        orden.getPago().setValorpago(nuevoValorTotal);
         // Guardar la orden actualizada
         ordenesRepository.save(orden);
 
-        return "El envío " + envio.getId() + " fue creado con éxito y el valor total de la orden se ha actualizado.";
+        return "El envío " + envio.getId() + " fue creado con éxito y el valor total de la orden se ha actualizado a:."+nuevoValorTotal;
     }
         
 
@@ -122,6 +122,50 @@ public class EnviosServiceImp implements IEnviosService {
         }
         
         enviosRepository.deleteById(idEnvio);
+    }
+
+    //Actualizar envio
+    @Transactional
+    public String actualizarEnvio(EnviosModel envio) {
+        // Verificar si el envío existe en la base de datos
+        EnviosModel envioExistente = enviosRepository.findById(envio.getId()).orElse(null);
+        if (envioExistente == null) {
+            return "Error! El envío con el ID " + envio.getId() + " no fue encontrado en la BD.";
+        }
+        // Verificar si la orden asociada al envío existe
+        Integer ordenId = envio.getIdorden();
+        OrdenesModel orden = ordenesRepository.findById(ordenId).orElse(null);
+        if (orden == null) {
+            return "Error! La orden con el ID " + ordenId + " no fue encontrada en la BD.";
+        }
+        //Verificar si la ciudad de envio esta disponible
+        String ciudadEnvio = envio.getDetallesubicacion().getCiudad();
+        if(!CIUDADES_DISPONIBLES.contains(ciudadEnvio)){
+            return "Error! La ciudad de envio no esta disponible";
+        }
+
+        //Obtener precio de envio
+        Double valorEnvio = obtenerPrecioEnvio(ciudadEnvio);
+        if (valorEnvio == null) {
+            return "Error! No se encontró el precio de envío para la ciudad " + ciudadEnvio;
+        }
+         // Actualizar datos de envio
+        envioExistente.setDetallesubicacion(envio.getDetallesubicacion());
+        envioExistente.setBarrio(envio.getBarrio());
+        envioExistente.setDireccion(envio.getDireccion());
+        envioExistente.setValorenvio(valorEnvio);
+
+
+        // Guardar el envío actualizado
+        enviosRepository.save(envioExistente);
+
+        // Actualizar el valor total de la orden con el valor de envío
+        double nuevoValorTotal = orden.getSubtotal() + valorEnvio;
+        orden.getPago().setValorpago(nuevoValorTotal);
+        // Guardar la orden actualizada
+        ordenesRepository.save(orden);
+
+        return "El envío " + envio.getId() + " fue actualizado con éxito y el valor total de la orden se ha actualizado a:"+nuevoValorTotal;
     }
     
 }

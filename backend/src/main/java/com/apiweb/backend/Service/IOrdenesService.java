@@ -14,5 +14,5 @@ public interface IOrdenesService {
 
     void eliminarOrdenPorId(int idOrden);
 
-    String actualizarOrden(int id, OrdenesModel ordenDetalles);
+    String actualizarOrden(int id, int idusuario, OrdenesModel ordenDetalles);
 }

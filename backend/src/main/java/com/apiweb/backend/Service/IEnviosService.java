@@ -13,4 +13,6 @@ public interface IEnviosService {
     List<EnviosModel> listarEnvios();
      //eliminar envio por id
     void eliminarEnvioPorId(int idEnvio);
+    //Actualizar envio
+    String actualizarEnvio(EnviosModel envio);
 }
