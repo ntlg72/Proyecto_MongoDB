@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.TotalProducto;
+import com.apiweb.backend.Model.ValoracionAlta;
+import com.apiweb.backend.Model.productosMasComentarios;
 import com.apiweb.backend.Service.IProductosService;
 
 @RestController
@@ -126,5 +129,23 @@ public class ProductosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor.");
         }
     }
-    
+
+    @GetMapping("/valoraciones-altas")
+    public ResponseEntity<List<ValoracionAlta>> obtenerValoracionesAltas() {
+        List<ValoracionAlta> valoracionesAltas = productoService.obtenerValoracionesAltas();
+        return new ResponseEntity<>(valoracionesAltas, HttpStatus.OK);
+    }
+
+    @GetMapping("/productos-mas-comentados")
+    public ResponseEntity<List<productosMasComentarios>> findproductosMasComentarios() {
+        List<productosMasComentarios> ProductosMasComentarios = productoService.findProductosMasComentarios();
+        return new ResponseEntity<>(ProductosMasComentarios, HttpStatus.OK);
+    }
+
+    @GetMapping ("/totalProductos")
+    public ResponseEntity<List<TotalProducto>> obtenerTotalCantidadPorProducto(){
+        List<TotalProducto> TotalProducto = productoService.obtenerTotalCantidadPorProducto();
+        return new ResponseEntity<>(TotalProducto, HttpStatus.OK);
+    }
+
 }

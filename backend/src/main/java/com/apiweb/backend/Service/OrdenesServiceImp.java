@@ -11,7 +11,10 @@ import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.Contiene;
 import com.apiweb.backend.Model.OrdenesModel;
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.TopProductos;
+import com.apiweb.backend.Model.TopUsuariosCompras;
 import com.apiweb.backend.Model.Talla;
+import com.apiweb.backend.Model.TopProductomenos;
 import com.apiweb.backend.Repository.IOrdenesRepository;
 import com.apiweb.backend.Repository.IProductosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -205,6 +208,22 @@ public class OrdenesServiceImp implements IOrdenesService{
         }
         ordenRepository.deleteById(idOrden);
     }
+
+    @Override
+    public List<TopProductos> getTop3ProductosMasVendidos() {
+        return ordenRepository.findTop3ProductosMasVendidos();
+    }
+
+    @Override
+    public List<TopUsuariosCompras> topUsuarioConMasCompras(){
+        return ordenRepository.topUsuarioConMasCompras();
+    }
+    
+    @Override
+    public List<TopProductomenos> getTop3ProductosMenosVendidos(){
+         return ordenRepository.getTop3ProductosMenosVendidos();
+    }
+
 
 }
 

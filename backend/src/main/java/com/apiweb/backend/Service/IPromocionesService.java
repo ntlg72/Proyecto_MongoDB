@@ -3,6 +3,7 @@ package com.apiweb.backend.Service;
 import java.util.List;
 
 import com.apiweb.backend.Model.PromocionesModel;
+import com.apiweb.backend.Model.productosPromo;
 
 public interface IPromocionesService {
     // Guardar promocion 
@@ -15,5 +16,9 @@ public interface IPromocionesService {
     void eliminarPromocionesPorId(int IdPromociones, int idUsuario, String username);
     //Actualizar promocion
     String actualizarpromocionPorId(PromocionesModel promocion, int idUsuario, String username);
+
+    //queries
+
+    List<productosPromo> findproductosPromo();
 
 }

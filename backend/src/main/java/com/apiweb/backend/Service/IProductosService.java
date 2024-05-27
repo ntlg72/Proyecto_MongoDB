@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.apiweb.backend.Model.Comentario;
 import com.apiweb.backend.Model.ProductosModel;
+import com.apiweb.backend.Model.TotalProducto;
+import com.apiweb.backend.Model.ValoracionAlta;
+import com.apiweb.backend.Model.productosMasComentarios;
 
 
 
@@ -23,4 +26,11 @@ public interface IProductosService {
     String guardarComentario (int idProducto, int idUsuario, Comentario comentario );
     //Actualizar Producto
     String actualizarProducto(ProductosModel productos, int idUsuario);
+
+    ///queries
+    List<ValoracionAlta> obtenerValoracionesAltas();
+
+    List<productosMasComentarios> findProductosMasComentarios();
+
+    List<TotalProducto>  obtenerTotalCantidadPorProducto();
 }

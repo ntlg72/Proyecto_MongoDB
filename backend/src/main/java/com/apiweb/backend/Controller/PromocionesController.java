@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.PromocionesModel;
+import com.apiweb.backend.Model.productosPromo;
 import com.apiweb.backend.Service.IPromocionesService;
 import com.apiweb.backend.Service.IUsuariosService;
 
@@ -98,6 +99,11 @@ public class PromocionesController {
         
     
 
+    @GetMapping("/productos-en-promo")
+    public ResponseEntity<List<productosPromo>> findproductosPromo() {
+        List<productosPromo> ProductosPromo = promocionesService.findproductosPromo();
+        return new ResponseEntity<>(ProductosPromo, HttpStatus.OK);
+    }
+
 }
-    
 

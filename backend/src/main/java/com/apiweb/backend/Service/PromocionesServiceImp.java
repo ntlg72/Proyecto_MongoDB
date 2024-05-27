@@ -13,6 +13,7 @@ import com.apiweb.backend.Model.ProductoPromocion;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Model.PromocionesModel;
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.productosPromo;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IProductosRepository;
 import com.apiweb.backend.Repository.IPromocionesRepository;
@@ -180,5 +181,13 @@ public class PromocionesServiceImp implements IPromocionesService{
         // Guardar la promoción actualizada
         promocionesRepository.save(promocionExistente);
         return "Promoción actualizada exitosamente";
+        
     }
+
+
+    @Override
+    public List<productosPromo> findproductosPromo() {
+        return promocionesRepository.findproductosPromo();
+    }
+
 }

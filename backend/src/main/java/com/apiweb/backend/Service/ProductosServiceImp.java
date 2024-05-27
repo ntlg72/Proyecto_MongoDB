@@ -13,7 +13,10 @@ import com.apiweb.backend.Model.Contiene;
 import com.apiweb.backend.Model.OrdenesModel;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Model.ProductosPaquete;
+import com.apiweb.backend.Model.TotalProducto;
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.ValoracionAlta;
+import com.apiweb.backend.Model.productosMasComentarios;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IProductosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -169,5 +172,19 @@ public class ProductosServiceImp implements IProductosService {
 
         return "El producto " + productoExistente.getNombre() + " con el id " + productos.getId() + " fue actualizado con éxito";
 
+    }
+    @Override
+    public List<ValoracionAlta> obtenerValoracionesAltas() {
+        return productosRepository.obtenerValoracionesAltas();
+    }
+
+    @Override
+    public List<productosMasComentarios> findProductosMasComentarios() {
+        return productosRepository.findproductosMasComentarios();
+    }
+
+    @Override
+    public List<TotalProducto> obtenerTotalCantidadPorProducto(){
+        return productosRepository.obtenerTotalCantidadPorProducto();
     }
 }

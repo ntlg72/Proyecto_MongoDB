@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import com.apiweb.backend.Service.IOrdenesService;
 import com.apiweb.backend.Exception.RecursoNoEncontradoException;
 import com.apiweb.backend.Model.OrdenesModel;
+import com.apiweb.backend.Model.TopProductomenos;
+import com.apiweb.backend.Model.TopProductos;
+import com.apiweb.backend.Model.TopUsuariosCompras;
 
 
 @RestController
@@ -73,7 +76,23 @@ public class OrdenesController {
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
        }
     }
+     @GetMapping("/top-ventas")
+    public ResponseEntity<List<TopProductos>> getTop3ProductosMasVendidos() {
+        List<TopProductos> topProductos = ordenesService.getTop3ProductosMasVendidos();
+        return new ResponseEntity<List<TopProductos>>(topProductos, HttpStatus.OK);
+    }
+    
+    @GetMapping ("/UsuariosTop")
+    public ResponseEntity<List<TopUsuariosCompras>> topUsuarioConMasCompras(){
+        List<TopUsuariosCompras> compra = ordenesService.topUsuarioConMasCompras();
+        return new ResponseEntity<List<TopUsuariosCompras>>(compra, HttpStatus.OK);
+    }
 
-
+    @GetMapping("/topmenosVentas")
+     public ResponseEntity<List<TopProductomenos>> getTop3ProductosMenosVendidos(){
+         List<TopProductomenos> topProductomenos = ordenesService.getTop3ProductosMenosVendidos();
+         return new ResponseEntity<List<TopProductomenos>>(topProductomenos, HttpStatus.OK );
+    }
+        
 
 }
