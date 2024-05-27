@@ -31,6 +31,7 @@ public interface IOrdenesRepository extends MongoRepository <OrdenesModel,Intege
           "{$lookup: {from: 'Usuarios',localField: '_id',foreignField: '_id',as: 'usuario'}}",
           "{ $unwind: { path: '$usuario' } }",
           "{ $project: {_id: 0, Usuario: '$usuario.nombre',Compras: 1 }}",
+          "{ $sort: { Compras: 1 } }",
           "{ $limit: 5 }"
         })
     List<TopUsuariosCompras> topUsuarioConMasCompras();
