@@ -180,7 +180,7 @@ public class ProductosServiceImp implements IProductosService {
     }
 
     @Override
-    public List<productosMasComentarios> findProductosMasComentarios() {
+    public List<productosMasComentarios> findproductosMasComentarios(){
         return productosRepository.findproductosMasComentarios();
     }
 

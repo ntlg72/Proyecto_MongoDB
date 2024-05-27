@@ -23,18 +23,18 @@ public interface IProductosRepository extends MongoRepository<ProductosModel, In
 
 
     @Aggregation(pipeline ={
-        " $unwind: { path: '$comentarios' } }",
-        "{ $group: {_id: {Nombre: '$nombre', comentarios: '$comentarios.comentario'},TotalComentarios: { $sum: 1 }}}",
-        "{ $sort: { TotalComentarios: -1 } }",
-        "{$project: {_id: 0,Producto: '$_id.Nombre',TotalComentarios: 1}}"
 
+    "{ $unwind: { path: '$comentario' } }",
+    "{ $group: {_id: {Nombre: '$nombre',comentarios: '$comentarios.comentario'},TotalComentarios: { $sum: 1 }}}",
+    "{ $sort: { TotalComentarios: -1 } }",
+    "{ $project: {_id: 0,Producto: '$_id.Nombre',TotalComentarios: 1}}"
     })
     List<productosMasComentarios> findproductosMasComentarios();
 
     @Aggregation(pipeline={
-        "{ $unwind: { path: '$talla' } }",
-    "{$group: {_id: { id: '$_id', Producto: '$nombre' },TotalProducto: { $sum: '$talla.cantidad' } } }",
-    "{$project: {_id: 0,idProducto: '$_id.id',Producto: '$_id.Producto',TotalProducto: 1}}"
+      "{ $unwind: { path: '$talla' } }",
+        "{ $group: { _id: { id: '$_id', Producto: '$nombre' }, totalProducto: { $sum: '$talla.cantidad' } } }",
+        "{ $project: { _id: '$_id.id', nombre: '$_id.Producto', totalProducto: 1 } }"
     })
     List<TotalProducto>  obtenerTotalCantidadPorProducto();
 

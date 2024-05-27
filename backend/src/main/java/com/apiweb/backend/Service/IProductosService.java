@@ -31,7 +31,7 @@ public interface IProductosService {
     ///queries
     List<ValoracionAlta> obtenerValoracionesAltas();
 
-    List<productosMasComentarios> findProductosMasComentarios();
+    List<productosMasComentarios> findproductosMasComentarios();
 
     List<TotalProducto>  obtenerTotalCantidadPorProducto();
 

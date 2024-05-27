@@ -139,7 +139,7 @@ public class ProductosController {
 
     @GetMapping("/productos-mas-comentados")
     public ResponseEntity<List<productosMasComentarios>> findproductosMasComentarios() {
-        List<productosMasComentarios> ProductosMasComentarios = productoService.findProductosMasComentarios();
+        List<productosMasComentarios> ProductosMasComentarios = productoService.findproductosMasComentarios();
         return new ResponseEntity<>(ProductosMasComentarios, HttpStatus.OK);
     }
 

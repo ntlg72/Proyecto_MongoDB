@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TopUsuariosCompras {
     
-    private String Nombre;
+    private String Usuario;
     private Integer Compras;
 }

@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
  @AllArgsConstructor
  @NoArgsConstructor
  public class TotalProducto {
-    private String idProducto;
-    private String nombreProducto;
-    private int totalCantidad;
+    private String id;
+    private String nombre;
+    private Integer totalProducto;
     
  }
  

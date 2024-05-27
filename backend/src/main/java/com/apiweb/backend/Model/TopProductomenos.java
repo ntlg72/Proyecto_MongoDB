@@ -12,9 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class TopProductomenos {
-  
-    private String id;
+    private Integer idProducto;
     private String nombre;
-    private int totalVentas;
+    private Integer totalVentas;
 
 }

@@ -27,12 +27,11 @@ public interface IOrdenesRepository extends MongoRepository <OrdenesModel,Intege
       List<TopProductos> findTop3ProductosMasVendidos();
       
     @Aggregation(pipeline={   
-        "{$group: {_id: '$idusuario',Compras: { $sum: 1 }}}",
-        "{$lookup: {from: 'Usuarios',localField: '_id',foreignField: '_id',as: 'usuario'}}",
-        "{ $unwind: { path: '$usuario' } }",
-        "{$project: {_id: 0Nombre: '$usuario.nombre',Compras: 1}}",
-        "{ $sort: { Compras: -1 } }",
-        "{ $limit: 5 }"
+          "{ $group: {_id: '$idusuario', Compras: { $sum: 1 }}}",
+          "{$lookup: {from: 'Usuarios',localField: '_id',foreignField: '_id',as: 'usuario'}}",
+          "{ $unwind: { path: '$usuario' } }",
+          "{ $project: {_id: 0, Usuario: '$usuario.nombre',Compras: 1 }}",
+          "{ $limit: 5 }"
         })
     List<TopUsuariosCompras> topUsuarioConMasCompras();
 
@@ -43,7 +42,7 @@ public interface IOrdenesRepository extends MongoRepository <OrdenesModel,Intege
     "{ $limit: 3 }",
     "{$lookup: {from: 'Productos',localField: '_id', foreignField: '_id',as: 'producto'}}",
     "{ $unwind: { path: '$producto' } }",
-    "{$project: {_id: '$_id',Nombre: '$producto.nombre',TotalVentas: 1 }}"
+    "{ $project: { idProducto: '$_id', nombre: '$producto.nombre', totalVentas: '$TotalVentas' } }"
     })
     List<TopProductomenos> getTop3ProductosMenosVendidos();
 
