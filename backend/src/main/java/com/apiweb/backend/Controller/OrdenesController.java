@@ -22,10 +22,12 @@ public class OrdenesController {
     @Autowired IOrdenesService ordenesService;
 
     // Guardar Orden 
-    @PostMapping("/guardar")
-    public ResponseEntity<String> crearOrden(@RequestBody OrdenesModel orden) {
+    @PostMapping("/guardar/{username}")
+    public ResponseEntity<String> crearOrden(
+        @RequestBody OrdenesModel orden,
+        @PathVariable("username") String username) {
         try {
-            String resultado = ordenesService.guardarOrden(orden);
+            String resultado = ordenesService.guardarOrden(orden, username);
             return new ResponseEntity<>(resultado, HttpStatus.OK);
         } catch (RecursoNoEncontradoException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -64,13 +66,14 @@ public class OrdenesController {
     }
 
     //Actualizar Ordenes por id
-    @PatchMapping("/actualizarorden/{id}/{idusuario}")
+    @PatchMapping("/actualizarorden/{id}/{idusuario}/{username}")
     public ResponseEntity<String> actualizarOrden(
         @PathVariable("id") int id, 
         @PathVariable("idusuario") int idusuario,
+        @PathVariable("username") String username,
         @RequestBody OrdenesModel ordenDetalles) {
        try {
-           String resultado = ordenesService.actualizarOrden(id,idusuario,ordenDetalles);
+           String resultado = ordenesService.actualizarOrden(id,idusuario,username,ordenDetalles);
            return ResponseEntity.ok(resultado);
        } catch (RecursoNoEncontradoException e) {
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

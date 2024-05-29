@@ -9,7 +9,7 @@ import com.apiweb.backend.Model.TopUsuariosCompras;
 
 public interface IOrdenesService {
     
-    String guardarOrden(OrdenesModel orden);
+    String guardarOrden(OrdenesModel orden, String username);
     
     OrdenesModel buscarOrdenPorId(int idOrden);
 
@@ -17,7 +17,7 @@ public interface IOrdenesService {
 
     void eliminarOrdenPorId(int idOrden);
 
-    String actualizarOrden(int id, int idusuario, OrdenesModel ordenDetalles);
+    String actualizarOrden(int id, int idusuario, String username, OrdenesModel ordenDetalles);
 
     List<TopProductos> getTop3ProductosMasVendidos();
 
