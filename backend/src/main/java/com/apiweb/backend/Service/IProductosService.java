@@ -26,7 +26,7 @@ public interface IProductosService {
     //Guardar comentario
     String guardarComentario (int idProducto, int idUsuario, Comentario comentario );
     //Actualizar Producto
-    String actualizarProducto(ProductosModel productos, int idUsuario, String username);
+    String actualizarProducto(ProductosModel productos, int idUsuario);
 
     ///queries
     List<ValoracionAlta> obtenerValoracionesAltas();

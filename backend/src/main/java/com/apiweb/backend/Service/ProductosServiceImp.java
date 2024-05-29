@@ -14,7 +14,6 @@ import com.apiweb.backend.Model.OrdenesModel;
 import com.apiweb.backend.Model.ProductosModel;
 import com.apiweb.backend.Model.ProductosPaquete;
 import com.apiweb.backend.Model.ProductosPorCategoria;
-import com.apiweb.backend.Model.Talla;
 import com.apiweb.backend.Model.TotalProducto;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ValoracionAlta;
@@ -36,38 +35,16 @@ public class ProductosServiceImp implements IProductosService {
         UsuariosModel usuario = usuariosRepository.findById(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
 
-            boolean esAdmin = usuario.getCuentas().stream()
-                .anyMatch(cuenta -> cuenta.getUsername().equals(username) && cuenta.getTipousuario() == TipoUsuario.administrador);
-            
-            if (!esAdmin) {
-                throw new RecursoNoEncontradoException("Error! Solo los administradores pueden crear productos.");
-            }
+        // Verificar si el usuario ya tiene una cuenta de administrador
+        boolean esAdministrador = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
 
-
-        try {
-            if (productos.getPrecio() < 0) {
-                throw new RecursoNoEncontradoException("Error: El precio del producto no puede ser negativo.");
-            }
-            
-            for (Talla talla : productos.getTalla()) {
-                String nombre = talla.getNombre();
-                Integer cantidad = talla.getCantidad();
-                if (cantidad < 0) {
-                    return "Error: La cantidad de la talla " + nombre + " del producto no puede ser negativa.";
-                }
-            }
-            
-            productosRepository.save(productos);
-            return "El producto " + productos.getNombre() + " con el id " + productos.getId() + " fue creado con éxito";
-        } catch (RecursoNoEncontradoException e) {
-            // Manejo de la excepción específica de precio negativo
-            return e.getMessage();
-        } catch (Exception e) {
-            // Manejo de cualquier otra excepción que pueda ocurrir
-            return "Ocurrió un error inesperado: " + e.getMessage();
+        if (!esAdministrador) {
+            throw new RecursoNoEncontradoException("Error! El usuario no es administrador");
         }
-        
 
+        productosRepository.save(productos);
+        return "El producto "+productos.getNombre()+" con el id "+productos.getId()+" fue creado con exito";
     }
 
     @Override
@@ -169,59 +146,34 @@ public class ProductosServiceImp implements IProductosService {
 
     // actualizar producto 
     @Transactional
-    public String actualizarProducto(ProductosModel productos, int idUsuario, String username) {
-            try {
-                // Verificar si el usuario existe en la base de datos
-                UsuariosModel usuario = usuariosRepository.findById(idUsuario)
+    public String actualizarProducto(ProductosModel productos, int idUsuario) {
+         // Verificar si el usuario existe en la base de datos
+        UsuariosModel usuario = usuariosRepository.findById(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Error: El usuario con el Id " + idUsuario + " no fue encontrado en la BD."));
 
-            boolean esAdmin = usuario.getCuentas().stream()
-                .anyMatch(cuenta -> cuenta.getUsername().equals(username) && cuenta.getTipousuario() == TipoUsuario.administrador);
-            
-            if (!esAdmin) {
-                throw new RecursoNoEncontradoException("Error! Solo los administradores pueden actualizar productos.");
-            }
-        
-                // Verificar si el producto existe en la base de datos
-                ProductosModel productoExistente = productosRepository.findById(productos.getId())
-                        .orElseThrow(() -> new RecursoNoEncontradoException("Error: El producto con el Id " + productos.getId() + " no fue encontrado en la BD."));
-        
-                // Verificar que el precio del producto no sea negativo
-                if (productos.getPrecio() < 0) {
-                    throw new IllegalArgumentException("Error: El precio del producto no puede ser negativo.");
-                }
-        
-                // Verificar que las cantidades de las tallas no sean negativas
-                for (Talla talla : productos.getTalla()) {
-                    String nombre = talla.getNombre();
-                    Integer cantidad = talla.getCantidad();
-                    if (cantidad < 0) {
-                        return "Error: La cantidad de la talla " + nombre + " del producto no puede ser negativa.";
-                    }
-                }
-        
-                // Actualizar los detalles del producto
-                productoExistente.setNombre(productos.getNombre());
-                productoExistente.setDescripcion(productos.getDescripcion());
-                productoExistente.setPrecio(productos.getPrecio());
-                productoExistente.setTalla(productos.getTalla());
-        
-                // Guardar el producto actualizado
-                productosRepository.save(productoExistente);
-        
-                return "El producto " + productoExistente.getNombre() + " con el id " + productos.getId() + " fue actualizado con éxito";
-            } catch (RecursoNoEncontradoException e) {
-                // Manejo de la excepción específica de recurso no encontrado
-                return e.getMessage();
-            } catch (IllegalArgumentException e) {
-                // Manejo de la excepción específica de argumento ilegal
-                return e.getMessage();
-            } catch (Exception e) {
-                // Manejo de cualquier otra excepción que pueda ocurrir
-                return "Ocurrió un error inesperado: " + e.getMessage();
-            }
-        }
+        // Verificar si el usuario ya tiene una cuenta de administrador
+        boolean esAdministrador = usuario.getCuentas().stream()
+                .anyMatch(cuenta -> cuenta.getTipousuario() == TipoUsuario.administrador);
 
+        if (!esAdministrador) {
+            throw new RecursoNoEncontradoException("Error! El usuario no es administrador");
+        }
+        // Verificar si el producto existe en la base de datos
+        ProductosModel productoExistente = productosRepository.findById(productos.getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Error: El producto con el Id " + productos.getId() + " no fue encontrado en la BD."));
+
+        // Actualizar los detalles del producto
+        productoExistente.setNombre(productos.getNombre());
+        productoExistente.setDescripcion(productos.getDescripcion());
+        productoExistente.setPrecio(productos.getPrecio());
+        productoExistente.setTalla(productos.getTalla());
+
+        // Guardar el producto actualizado
+        productosRepository.save(productoExistente);
+
+        return "El producto " + productoExistente.getNombre() + " con el id " + productos.getId() + " fue actualizado con éxito";
+
+    }
     @Override
     public List<ValoracionAlta> obtenerValoracionesAltas() {
         return productosRepository.obtenerValoracionesAltas();

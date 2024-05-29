@@ -112,18 +112,17 @@ public class ProductosController {
         }
     }
     
-    @PatchMapping("/actualizar/{id}/{idUsuario}/{username}")
+    @PatchMapping("/actualizar/{id}/{idUsuario}")
     public ResponseEntity<String> actualizarProducto(
             @PathVariable int id,
-            @PathVariable String username,
-            @PathVariable int idUsuario,
-            @RequestBody ProductosModel productos) {
+            @RequestBody ProductosModel productos,
+            @PathVariable int idUsuario) {
         try {
             // Establecer el ID del producto en el modelo recibido
             productos.setId(id);
 
             // Llamar al servicio para actualizar el producto
-            String resultado = productoService.actualizarProducto(productos, idUsuario, username);
+            String resultado = productoService.actualizarProducto(productos, idUsuario);
             return ResponseEntity.ok(resultado);
         } catch (RecursoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
