@@ -5,7 +5,7 @@ Este proyecto tiene como objetivo principal el modelado e implementación de un 
 
 # Implementación
 
-La implementación de la solución del sistema de almacenamiento abarca por una parte el uso de una  base de datos NoSQL (MongoDB), y el uso de Spring Boot y Java, con el fin de asegurar una gestión eficiente de la información y el funcionamiento óptimo de la aplicación web. 
+La implementación de la solución del sistema de almacenamiento abarca por una parte el uso de una  base de datos NoSQL (MongoDB),  y por otra parte el  backend hace uso de Java y Spring Boot, lo que garantiza la funcionalidad del sistema de almacenamiento y proporciona una interfaz API robusta para interactuar con los datos.
 
 ## Modelado
 
