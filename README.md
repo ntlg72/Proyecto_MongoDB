@@ -11,7 +11,8 @@ La implementación de la solución del sistema de almacenamiento abarca por una 
 
 El modelado de la base de datos se realizó a partir de 5 colecciones: Usuarios, Productos, Promociones, Ordenes y Envíos. La colecciones con sus respectivos documentos y campos se pueden evidenciar en la siguiente imagen.
 
-![Modelado-1](https://github.com/user-attachments/assets/55f1ed6d-6661-42cb-b419-48aa3df7b966)
+![381809257-55f1ed6d-6661-42cb-b419-48aa3df7b966 (1)](https://github.com/user-attachments/assets/0f63a391-0c91-46b6-a9ab-706360992c64)
+
 
 
 ## Esquema de las colecciones
